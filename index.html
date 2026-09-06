@@ -1,936 +1,1161 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-page-node-id="smvAfbSwdBGSA69TOk6KIv">
-<head data-page-node-id="Z79ZjGuKYRSIeMhOyPGAhT">
-<meta charset="UTF-8" data-page-node-id="MgHVha83bg6jJK12ObkD5A">
-<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="RAdlGndo3tU7ht2FPkqLPB">
-<title>AI 正在「吃掉」基层 — 新基层岗位地图</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<style>
-:root{
-  --primary:#064E3B;
-  --primary-dark:#0F4D38;
-  --secondary:#0EA5E9;
-  --accent:#F59E0B;
-  --green:#10B981;
-  --surface:#F0FDF4;
-  --white:#FFFFFF;
-  --text:#1A2E26;
-  --muted:#6B7280;
-  --line:#D1FAE5;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,BlinkMacSystemFont,sans-serif;
-  background:var(--surface);color:var(--text);line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-}
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyerSoHigh - 个人主页</title>
+    <style>
+        /* ===== 基础重置与变量 ===== */
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #1a1a1a;
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0a0;
+            --accent: #6c63ff;
+            --accent-hover: #5a52d5;
+            --accent-glow: rgba(108, 99, 255, 0.3);
+            --border: #2a2a2a;
+            --gradient-1: linear-gradient(135deg, #6c63ff, #e942f5);
+            --gradient-2: linear-gradient(135deg, #00c6ff, #0072ff);
+        }
 
-/* ---------- 进度条 ---------- */
-#progress{position:fixed;top:0;left:0;height:4px;background:var(--accent);width:0;z-index:1000;transition:width .1s}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* ---------- 导航 ---------- */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:900;
-  background:rgba(6,78,59,.95);backdrop-filter:blur(12px);
-  transform:translateY(-100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
-  border-bottom:1px solid rgba(255,255,255,.1);
-}
-nav.show{transform:translateY(0)}
-.nav-inner{max-width:1200px;margin:0 auto;padding:0 32px;display:flex;align-items:center;gap:8px;height:60px}
-.nav-logo{font-weight:700;color:#fff;font-size:15px;letter-spacing:1px;margin-right:auto;display:flex;align-items:center;gap:8px}
-.nav-logo i{width:8px;height:8px;border-radius:50%;background:var(--accent);display:block}
-.nav-links{display:flex;gap:4px}
-.nav-links a{
-  color:rgba(255,255,255,.65);text-decoration:none;font-size:13px;
-  padding:6px 14px;border-radius:20px;transition:all .25s;white-space:nowrap;
-}
-.nav-links a:hover{color:#fff;background:rgba(255,255,255,.1)}
-.nav-links a.active{color:var(--primary);background:var(--accent);font-weight:600}
+        html {
+            scroll-behavior: smooth;
+        }
 
-/* ---------- Hero ---------- */
-.hero{
-  min-height:100vh;background:var(--primary);position:relative;overflow:hidden;
-  display:flex;align-items:center;
-}
-.hero::before{
-  content:'';position:absolute;top:-150px;right:-150px;width:600px;height:600px;
-  border-radius:50%;background:radial-gradient(circle,var(--secondary) 0%,transparent 65%);opacity:.3;
-  animation:float 14s ease-in-out infinite;
-}
-.hero::after{
-  content:'';position:absolute;bottom:-180px;left:-120px;width:520px;height:520px;
-  border-radius:50%;background:radial-gradient(circle,var(--accent) 0%,transparent 65%);opacity:.18;
-  animation:float 18s ease-in-out infinite reverse;
-}
-@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
-.hero-inner{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:2;width:100%}
-.hero-tag{display:flex;align-items:center;gap:12px;margin-bottom:28px;animation:fadeUp .8s .2s both}
-.hero-tag span{font-size:13px;color:var(--secondary);letter-spacing:5px;font-weight:500}
-.hero-tag i{width:8px;height:8px;border-radius:50%;background:var(--accent);display:block;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}
-.hero h1{font-size:clamp(44px,7vw,88px);font-weight:800;color:#fff;line-height:1.1;letter-spacing:-1px}
-.hero h1 .l1{display:block;animation:fadeUp .8s .35s both}
-.hero h1 .l2{display:block;animation:fadeUp .8s .5s both;color:var(--accent)}
-.hero-sub{
-  font-size:clamp(17px,2.2vw,24px);color:#A7D4C5;margin-top:28px;font-weight:400;
-  animation:fadeUp .8s .65s both;
-}
-.hero-meta{font-size:14px;color:rgba(255,255,255,.45);margin-top:12px;animation:fadeUp .8s .75s both}
-.hero-line{display:flex;align-items:center;gap:8px;margin-top:56px;animation:fadeUp .8s .9s both}
-.hero-line b{height:4px;border-radius:2px;display:block}
-.hero-line .b1{width:200px;background:var(--accent)}
-.hero-line .b2{width:60px;background:var(--secondary)}
-.hero-line .b3{width:30px;background:var(--green)}
-.hero-line .grow{flex:1;height:2px;background:rgba(255,255,255,.15)}
-.hero-line em{font-style:normal;font-size:12px;color:rgba(255,255,255,.5);letter-spacing:3px}
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-.scroll-hint{
-  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:3;
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  color:rgba(255,255,255,.5);font-size:11px;letter-spacing:2px;
-  animation:fadeUp .8s 1.1s both;
-}
-.scroll-hint .mouse{width:22px;height:34px;border:1.5px solid rgba(255,255,255,.35);border-radius:12px;position:relative}
-.scroll-hint .mouse::after{
-  content:'';position:absolute;top:7px;left:50%;transform:translateX(-50%);
-  width:3px;height:7px;border-radius:2px;background:var(--accent);animation:scroll 1.8s infinite;
-}
-@keyframes scroll{0%{opacity:0;transform:translate(-50%,0)}30%{opacity:1}70%{opacity:1;transform:translate(-50%,10px)}100%{opacity:0}}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-/* ---------- 通用 section ---------- */
-section{position:relative}
-.wrap{max-width:1200px;margin:0 auto;padding:0 40px}
-.sec{padding:110px 0}
-.sec-dark{background:var(--primary);color:#fff}
-.sec-light{background:var(--white)}
-.sec-tint{background:var(--surface)}
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-/* 章节号 */
-.eyebrow{
-  display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:600;
-  letter-spacing:4px;color:var(--secondary);margin-bottom:16px;
-}
-.eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:block}
-.sec-dark .eyebrow{color:var(--accent)}
-h2.title{font-size:clamp(28px,4vw,42px);font-weight:800;line-height:1.25;letter-spacing:-.5px}
-.sec-dark h2.title{color:#fff}
-.lead{font-size:17px;color:var(--muted);margin-top:14px;max-width:680px;line-height:1.75}
-.sec-dark .lead{color:#A7D4C5}
+        /* ===== 导航栏 ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
 
-/* ---------- 数据卡 ---------- */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:52px}
-.stat{
-  background:var(--white);border:1px solid var(--line);border-radius:14px;padding:24px;
-  transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden;
-}
-.stat::after{content:'';position:absolute;top:0;left:0;width:0;height:3px;background:var(--accent);transition:width .6s}
-.stat:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(6,78,59,.1)}
-.stat:hover::after{width:100%}
-.stat .lab{font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:14px}
-.stat .num{font-size:46px;font-weight:800;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
-.stat.dark{background:var(--primary);border-color:transparent}
-.stat.dark .num{color:#fff}
-.stat.dark .lab{color:#A7D4C5}
-.stat.blue{background:var(--secondary);border-color:transparent}
-.stat.blue .num{color:#fff}
-.stat.blue .lab{color:#DCF2FB}
-.stat .desc{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.6}
-.stat.dark .desc{color:#A7D4C5}
-.stat.blue .desc{color:#DCF2FB}
+        nav.scrolled {
+            padding: 0.8rem 2rem;
+            background: rgba(10, 10, 10, 0.95);
+        }
 
-/* ---------- 金句条 ---------- */
-.quote{
-  margin-top:44px;background:var(--primary);border-radius:14px;padding:32px 36px;
-  display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
-}
-.quote .q-lab{font-size:11px;color:var(--accent);letter-spacing:4px;margin-bottom:10px}
-.quote .q-text{font-size:clamp(19px,2.6vw,28px);color:#fff;font-weight:700;line-height:1.45}
-.quote .q-num{text-align:right}
-.quote .q-num b{display:block;font-size:clamp(40px,6vw,64px);color:var(--secondary);font-weight:800;line-height:1}
-.quote .q-num span{font-size:12px;color:#A7D4C5}
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-/* ---------- 筛选器 ---------- */
-.filters{display:flex;gap:10px;margin-top:44px;flex-wrap:wrap}
-.filter{
-  padding:10px 22px;border-radius:24px;border:1.5px solid var(--line);background:var(--white);
-  font-size:14px;font-weight:600;color:var(--primary);cursor:pointer;transition:all .25s;
-  display:flex;align-items:center;gap:8px;font-family:inherit;
-}
-.filter i{width:8px;height:8px;border-radius:50%;display:block}
-.filter:hover{border-color:var(--primary);transform:translateY(-2px)}
-.filter.on{background:var(--primary);color:#fff;border-color:var(--primary)}
-.filter.on i{background:var(--accent)!important}
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
 
-/* ---------- 岗位卡 ---------- */
-.job-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:28px}
-.job{
-  background:var(--white);border:1px solid var(--line);border-radius:12px;padding:20px;
-  transition:transform .3s,box-shadow .3s,opacity .3s;position:relative;
-}
-.job:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(6,78,59,.09)}
-.job.hide{display:none}
-.job-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
-.job-name{font-size:16px;font-weight:700;color:var(--primary)}
-.job-rate{font-size:13px;font-weight:800;color:var(--accent);white-space:nowrap;font-variant-numeric:tabular-nums}
-.job-note{font-size:12.5px;color:var(--muted);line-height:1.6}
-.job-bar{height:5px;background:var(--line);border-radius:3px;margin-top:14px;overflow:hidden}
-.job-bar span{display:block;height:100%;border-radius:3px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
-.job-tag{
-  position:absolute;top:14px;right:14px;font-size:10px;padding:3px 8px;border-radius:10px;
-  font-weight:600;letter-spacing:.5px;
-}
-.tag-hi{background:rgba(245,158,11,.15);color:var(--accent)}
-.tag-mid{background:rgba(14,165,233,.12);color:var(--secondary)}
-.tag-safe{background:rgba(16,185,129,.15);color:var(--green)}
+        .nav-links a {
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
 
-/* ---------- 图表 ---------- */
-.chart-box{
-  background:var(--white);border:1px solid var(--line);border-radius:14px;padding:28px;margin-top:32px;
-}
-.chart-box h4{font-size:15px;color:var(--primary);font-weight:700;margin-bottom:4px}
-.chart-box p{font-size:12.5px;color:var(--muted);margin-bottom:20px}
-.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
-@media(max-width:860px){.chart-row{grid-template-columns:1fr}}
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
 
-/* ---------- 四步走 ---------- */
-.steps{margin-top:52px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.step{
-  background:var(--white);border:1px solid var(--line);border-radius:14px;padding:26px;
-  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
-}
-.step::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--secondary);
-  transform:scaleX(0);transform-origin:left;transition:transform .4s;
-}
-.step:hover::before,.step.on::before{transform:scaleX(1)}
-.step:hover{transform:translateY(-5px);box-shadow:0 14px 34px rgba(6,78,59,.1)}
-.step.on{background:var(--primary);border-color:var(--primary)}
-.step-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.step-n{
-  width:38px;height:38px;border-radius:10px;background:var(--secondary);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex-shrink:0;
-}
-.step.on .step-n{background:var(--accent);color:var(--primary)}
-.step-badge{font-size:10px;letter-spacing:2px;color:var(--muted);font-weight:600}
-.step.on .step-badge{color:#A7D4C5}
-.step h4{font-size:18px;font-weight:700;color:var(--primary);margin-bottom:10px}
-.step.on h4{color:#fff}
-.step p{font-size:13.5px;color:var(--muted);line-height:1.7}
-.step.on p{color:#A7D4C5}
-.step-meter{margin-top:18px}
-.step-meter .ml{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px}
-.step.on .step-meter .ml{color:#A7D4C5}
-.step-meter .mb{height:5px;background:var(--line);border-radius:3px;overflow:hidden}
-.step.on .step-meter .mb{background:rgba(255,255,255,.12)}
-.step-meter .mb span{display:block;height:100%;border-radius:3px;width:0;transition:width 1.1s cubic-bezier(.4,0,.2,1)}
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
 
-/* ---------- 路径卡 ---------- */
-.paths{margin-top:52px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-.path{
-  border-radius:16px;padding:28px;color:#fff;position:relative;overflow:hidden;
-  min-height:230px;display:flex;flex-direction:column;justify-content:space-between;
-  transition:transform .35s,box-shadow .35s;cursor:pointer;
-}
-.path:hover{transform:translateY(-8px);box-shadow:0 22px 48px rgba(6,78,59,.22)}
-.path::after{
-  content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;
-  background:rgba(255,255,255,.08);transition:transform .5s;
-}
-.path:hover::after{transform:scale(1.3)}
-.path-a{background:var(--primary)}
-.path-b{background:var(--secondary)}
-.path-c{background:linear-gradient(135deg,#0F4D38,#064E3B)}
-.path-d{background:linear-gradient(135deg,#0891B2,#0EA5E9)}
-.path-l{width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;margin-bottom:18px}
-.path h4{font-size:21px;font-weight:800;margin-bottom:10px;position:relative;z-index:1}
-.path p{font-size:13.5px;opacity:.85;line-height:1.7;position:relative;z-index:1}
-.path-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px;position:relative;z-index:1}
-.path-tags span{font-size:11.5px;padding:5px 11px;border-radius:12px;background:rgba(255,255,255,.16);backdrop-filter:blur(4px)}
+        .nav-links a:hover::after {
+            width: 100%;
+        }
 
-/* ---------- 族群图例 ---------- */
-.legend{display:flex;flex-direction:column;gap:10px}
-.lg{
-  display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:11px;
-  background:var(--white);border:1px solid var(--line);cursor:pointer;transition:all .25s;
-}
-.lg:hover{transform:translateX(6px);border-color:var(--primary)}
-.lg.on{background:var(--primary);border-color:var(--primary)}
-.lg i{width:10px;height:42px;border-radius:5px;flex-shrink:0;transition:height .3s}
-.lg:hover i,.lg.on i{height:52px}
-.lg-txt{flex:1}
-.lg-txt b{display:block;font-size:16px;color:var(--primary);font-weight:700;margin-bottom:3px}
-.lg.on .lg-txt b{color:#fff}
-.lg-txt span{font-size:12.5px;color:var(--muted);line-height:1.5}
-.lg.on .lg-txt span{color:#A7D4C5}
-.lg-code{font-size:10px;letter-spacing:2px;font-weight:600;color:var(--secondary)}
-.lg.on .lg-code{color:var(--accent)}
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
 
-/* ---------- 案例 ---------- */
-.case-head{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}
-@media(max-width:860px){.case-head{grid-template-columns:1fr;gap:28px}}
-.case-big{font-size:clamp(46px,7vw,80px);font-weight:800;line-height:1.1;letter-spacing:-1px}
-.case-big .w{color:#fff}
-.case-big .y{color:var(--accent)}
-.case-sub{font-size:16px;color:#A7D4C5;margin-top:20px;line-height:1.7}
-.case-stats{display:flex;flex-direction:column;gap:12px}
-.case-stat{border-radius:12px;padding:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
-.case-stat .cs-l{font-size:11px;letter-spacing:2px;color:var(--secondary);margin-bottom:8px}
-.case-stat .cs-n{font-size:38px;font-weight:800;color:#fff;line-height:1;font-variant-numeric:tabular-nums}
-.case-stat .cs-d{font-size:12.5px;color:#A7D4C5;margin-top:10px;line-height:1.6}
-.case-stat.hl{background:var(--accent);border-color:var(--accent)}
-.case-stat.hl .cs-l{color:var(--primary)}
-.case-stat.hl .cs-n{color:var(--primary)}
-.case-stat.hl .cs-d{color:var(--primary)}
+        .menu-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: all 0.3s;
+        }
 
-/* ---------- 地图 ---------- */
-.map-wrap{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:20px;position:relative}
-.map-wrap svg{width:100%;height:auto;display:block}
-.mp{cursor:pointer;transition:opacity .3s}
-.mp:hover{opacity:.75}
-#tip{
-  position:absolute;background:var(--primary);color:#fff;padding:8px 14px;border-radius:8px;
-  font-size:12.5px;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap;z-index:10;
-  box-shadow:0 8px 20px rgba(0,0,0,.2);
-}
-#tip.show{opacity:1}
-#tip b{color:var(--accent);display:block;font-size:14px;margin-bottom:2px}
+        /* ===== Hero 区域 ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem;
+            overflow: hidden;
+        }
 
-/* ---------- 行动 ---------- */
-.rules{margin-top:52px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.rule{
-  border-radius:14px;padding:28px;transition:transform .35s,box-shadow .35s;
-  display:flex;flex-direction:column;justify-content:space-between;min-height:250px;
-}
-.rule:hover{transform:translateY(-7px);box-shadow:0 18px 40px rgba(6,78,59,.13)}
-.rule-1{background:var(--white);border:1px solid var(--line)}
-.rule-2{background:var(--secondary);color:#fff}
-.rule-3{background:var(--primary);color:#fff}
-.rule-n{font-size:40px;font-weight:800;line-height:1;margin-bottom:18px}
-.rule-1 .rule-n{color:var(--primary)}
-.rule-2 .rule-n{color:#fff}
-.rule-3 .rule-n{color:var(--accent)}
-.rule h4{font-size:20px;font-weight:800;margin-bottom:12px;line-height:1.35}
-.rule-1 h4{color:var(--primary)}
-.rule p{font-size:13.5px;line-height:1.75}
-.rule-1 p{color:var(--muted)}
-.rule-2 p{color:#DCF2FB}
-.rule-3 p{color:#A7D4C5}
-.rule-foot{
-  margin-top:20px;padding:10px 14px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:.3px;
-}
-.rule-1 .rule-foot{background:var(--surface);color:var(--primary)}
-.rule-2 .rule-foot{background:rgba(255,255,255,.18);color:#fff}
-.rule-3 .rule-foot{background:var(--primary-dark);color:var(--accent)}
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
 
-.skills{margin-top:56px}
-.skills h4{font-size:13px;letter-spacing:3px;color:var(--primary);font-weight:700;margin-bottom:18px}
-.skill-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.skill{
-  background:var(--white);border:1px solid var(--line);border-radius:11px;padding:18px;
-  display:flex;align-items:center;gap:14px;transition:all .3s;
-}
-.skill:hover{transform:translateY(-4px);box-shadow:0 12px 26px rgba(6,78,59,.09);border-color:var(--primary)}
-.skill i{
-  width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:800;font-size:16px;flex-shrink:0;font-style:normal;
-}
-.skill b{display:block;font-size:14.5px;color:var(--primary);font-weight:700;margin-bottom:2px}
-.skill span{font-size:12px;color:var(--muted)}
+        .hero-bg .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out;
+        }
 
-/* ---------- 结尾 ---------- */
-.ending{
-  min-height:88vh;background:var(--primary);display:flex;align-items:center;
-  position:relative;overflow:hidden;text-align:left;
-}
-.ending::before{
-  content:'';position:absolute;top:-120px;right:-120px;width:520px;height:520px;border-radius:50%;
-  background:radial-gradient(circle,var(--accent) 0%,transparent 62%);opacity:.16;
-}
-.ending::after{
-  content:'';position:absolute;bottom:-160px;left:-160px;width:560px;height:560px;border-radius:50%;
-  background:radial-gradient(circle,var(--secondary) 0%,transparent 55%);opacity:.16;
-}
-.ending-inner{position:relative;z-index:2;width:100%}
-.ending h2{font-size:clamp(34px,5.5vw,62px);font-weight:800;line-height:1.2;color:#fff;letter-spacing:-1px}
-.ending h2 .y{color:var(--accent)}
-.ending-pillars{display:flex;gap:12px;margin-top:44px;flex-wrap:wrap}
-.pillar{
-  padding:12px 26px;border-radius:26px;font-size:clamp(15px,2vw,19px);font-weight:700;
-  border:1.5px solid;transition:transform .3s,box-shadow .3s;cursor:default;
-}
-.pillar:hover{transform:translateY(-5px)}
-.p1{color:var(--secondary);border-color:rgba(14,165,233,.4);background:rgba(14,165,233,.12)}
-.p1:hover{box-shadow:0 12px 28px rgba(14,165,233,.2)}
-.p2{color:var(--accent);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.12)}
-.p2:hover{box-shadow:0 12px 28px rgba(245,158,11,.2)}
-.p3{color:var(--green);border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.12)}
-.p3:hover{box-shadow:0 12px 28px rgba(16,185,129,.2)}
-.p4{color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.1)}
-.p4:hover{box-shadow:0 12px 28px rgba(255,255,255,.12)}
-.ending-foot{
-  margin-top:64px;padding-top:26px;border-top:1px solid rgba(255,255,255,.12);
-  display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;
-}
-.ending-foot .ef-l b{display:block;font-size:12px;color:var(--accent);letter-spacing:4px;margin-bottom:6px}
-.ending-foot .ef-l span{font-size:13.5px;color:#A7D4C5;letter-spacing:1px}
+        .hero-bg .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #6c63ff;
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
 
-/* ---------- 揭示动画 ---------- */
-.rv{opacity:0;transform:translateY(34px);transition:opacity .75s cubic-bezier(.4,0,.2,1),transform .75s cubic-bezier(.4,0,.2,1)}
-.rv.in{opacity:1;transform:translateY(0)}
+        .hero-bg .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: #e942f5;
+            bottom: -50px;
+            left: -50px;
+            animation-delay: -7s;
+        }
 
-@media(max-width:640px){
-  .wrap{padding:0 22px}
-  .sec{padding:72px 0}
-  .nav-links{display:none}
-  .quote{padding:24px}
-  .quote .q-num{text-align:left}
-}
-</style>
+        .hero-bg .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: #00c6ff;
+            top: 50%;
+            left: 50%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+            max-width: 800px;
+        }
+
+        .hero-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            box-shadow: 0 0 40px var(--accent-glow);
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 40px var(--accent-glow); }
+            50% { box-shadow: 0 0 60px var(--accent-glow), 0 0 80px rgba(233, 66, 245, 0.2); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero h1 .highlight {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px var(--accent-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator span {
+            display: block;
+            width: 20px;
+            height: 30px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .scroll-indicator span::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: scroll-dot 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        @keyframes scroll-dot {
+            0% { opacity: 1; top: 6px; }
+            100% { opacity: 0; top: 18px; }
+        }
+
+        /* ===== 通用 Section ===== */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(108, 99, 255, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 50px;
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* ===== About 区域 ===== */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-image {
+            position: relative;
+        }
+
+        .about-image .image-placeholder {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-image .image-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-1);
+            opacity: 0.1;
+        }
+
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-item .number {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-item .label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        /* ===== Skills 区域 ===== */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .skill-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient-1);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 40px rgba(108, 99, 255, 0.1);
+        }
+
+        .skill-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .skill-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(108, 99, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .skill-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .skill-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .skill-tags span {
+            padding: 0.3rem 0.8rem;
+            background: rgba(108, 99, 255, 0.08);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== Projects 区域 ===== */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 40px rgba(108, 99, 255, 0.1);
+        }
+
+        .project-image {
+            height: 200px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-1);
+            opacity: 0.05;
+        }
+
+        .project-content {
+            padding: 2rem;
+        }
+
+        .project-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .project-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-tech span {
+            padding: 0.2rem 0.7rem;
+            background: rgba(108, 99, 255, 0.08);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+
+        .project-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .project-links a {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .project-links a:hover {
+            color: var(--accent);
+        }
+
+        /* ===== Blog 区域 ===== */
+        .blog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .blog-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .blog-card:hover {
+            border-color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        .blog-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .blog-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .blog-card h3 a:hover {
+            color: var(--accent);
+        }
+
+        .blog-card p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: gap 0.3s;
+        }
+
+        .read-more:hover {
+            gap: 0.8rem;
+        }
+
+        /* ===== Contact 区域 ===== */
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .contact-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-info p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .contact-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+
+        .contact-link:hover {
+            color: var(--accent);
+        }
+
+        .contact-link .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(108, 99, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.8rem 1.2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        footer .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        footer .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        footer .social-links a:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: rgba(10, 10, 10, 0.98);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2.5rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                font-size: 1.3rem;
+            }
+
+            .menu-toggle {
+                display: flex;
+                z-index: 1001;
+            }
+
+            .about-grid,
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .about-stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* ===== 动画 ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
-<body data-page-node-id="olKHF55jYqLAAgAjdmr7W7">
+<body>
 
-<div id="progress" data-page-node-id="ihbLvtpH1XuFZAI26LKZn7"></div>
-
-<nav id="nav" data-page-node-id="DgqerUmC5KBjVdyowkCh9V">
-  <div class="nav-inner" data-page-node-id="b1U1DeMoAFNdx4Pk2cIW53">
-    <div class="nav-logo" data-page-node-id="aEiBdoyWqIggnYZoiftCDE"><i data-page-node-id="4oDsN4qgW4rxjoMoNeE3Fp"></i>THE JOB MAP</div>
-    <div class="nav-links" data-page-node-id="SFjhtigBm02wvf2ER0Q7uJ">
-      <a href="#s1" data-s="s1" data-page-node-id="NiA2JnK8zQwzJx8CnlaVf8">现象</a>
-      <a href="#s2" data-s="s2" data-page-node-id="IGP0lSUk3CZDUiOEQYw6ft">地图</a>
-      <a href="#s3" data-s="s3" data-page-node-id="cfWH6ZPBAgzgAbOnIsrZzq">机制</a>
-      <a href="#s4" data-s="s4" data-page-node-id="CigD8jB6Ah0b3bvoLeiy2U">新生</a>
-      <a href="#s5" data-s="s5" data-page-node-id="N1MBy7C8jpu2KnEdfQU4j7">行动</a>
-    </div>
-  </div>
-</nav>
-
-<!-- ============ HERO ============ -->
-<header class="hero" data-page-node-id="tbc92bmP4I4TE00J3ffC2J">
-  <div class="hero-inner" data-page-node-id="jZ16DGpHEWV7w6UpSx33rI">
-    <div class="hero-tag" data-page-node-id="NDJNpKKRGgUtUGLIDNrhJQ"><i data-page-node-id="zrC8YFGcVOUX6eOMDgHOfF"></i><span data-page-node-id="HbLcsrBQlXkOeLgMnT3p7f">THE JOB MAP · 2026</span></div>
-    <h1 data-page-node-id="XGpUPHzGSKtJCpkC5PIB0W">
-      <span class="l1" data-page-node-id="3b7IpHZzLGcbpiURfHbGVi">AI 正在</span>
-      <span class="l2" data-page-node-id="Ehd3BqIPzqfdDdg57MCxlZ">「吃掉」基层</span>
-    </h1>
-    <p class="hero-sub" data-page-node-id="6FUovfjEKjPnGRg44l4CKY">新的「基层岗位」会从哪里冒出来？</p>
-    <p class="hero-meta" data-page-node-id="nFn7cfCVDEMwgJHjdHecnC">一份给科技爱好者的岗位观察 · 2026.09</p>
-    <div class="hero-line" data-page-node-id="tVTgK8v3ljdUzIH0TQY7uv">
-      <b class="b1" data-page-node-id="tRdoOCAQvf86XxRnV25eUM"></b><b class="b2" data-page-node-id="6YVQ1HXdYOQdN4yp7JAoZN"></b><b class="b3" data-page-node-id="FRfz69i3lgfg8LbaCiFFP3"></b>
-      <span class="grow" data-page-node-id="7PZlbYSFCIiq8v8mZcL2mg"></span>
-      <em data-page-node-id="rnOstzTqbPzVEGpAz4heJ2">PAST · NOW · NEXT</em>
-    </div>
-  </div>
-  <div class="scroll-hint" data-page-node-id="fUf11F0lChpOVhZjzxmkPX"><div class="mouse" data-page-node-id="PxeFJ7DI2zYCFMnReEJduF"></div>SCROLL</div>
-</header>
-
-<!-- ============ 01 现象 ============ -->
-<section id="s1" class="sec sec-tint" data-page-node-id="HcLwlMgs19TJCpJwxsE9Ue">
-  <div class="wrap" data-page-node-id="kj1MRr5nEOIs7JMcWhWTV7">
-    <div class="eyebrow rv" data-page-node-id="YDB2y0Lb24TBNMvJ3Fe7dL"><i data-page-node-id="4EeTH9n9CaELVzNroA9Kzn"></i>CHAPTER 01 · 现象</div>
-    <h2 class="title rv" data-page-node-id="qENuEzApCp505egSLtKhV1">AI 替代岗位的真实速度</h2>
-    <p class="lead rv" data-page-node-id="EqR51D9Lk3GHHtcT7jTjxR">我们正站在一场静悄悄的职业重构里。不是「会不会」，而是「什么时候」。</p>
-
-    <div class="stat-grid" data-page-node-id="uIWItgMayKwVKFRUlFUTpZ">
-      <div class="stat rv" data-page-node-id="VLvr070GXaG0I4g883Exn1"><div class="lab" data-page-node-id="gvAqaAarT0PAelYgofGKCh">企业岗位重构率</div><div class="num" data-to="30" data-suf="%" data-page-node-id="twsd1AxxI0dMZNRT5NdM9y">0</div><div class="desc" data-page-node-id="vUZXvP50EdJzHpbGXW4cSf">全球 30% 企业岗位职责<br data-page-node-id="ZOqMKYHlhEHMydUGOO7bX8">正在被 AI 重构</div></div>
-      <div class="stat dark rv" data-page-node-id="qM56q6YcKURSNAxR7UeiNY"><div class="lab" data-page-node-id="p3ZDLgfcGoZJVcUF7CK3nP">客服岗被替代</div><div class="num" data-to="4000" data-page-node-id="OdXYDm4G9mmBZxyPN32lQl">0</div><div class="desc" data-page-node-id="FN6dqyEoyqsJ4B8589fU24">Salesforce 用 AI<br data-page-node-id="1ftbuIp2geiYljVGpmFOf4">砍掉 4000 客服</div></div>
-      <div class="stat rv" data-page-node-id="N3JJldKnn0KvEqXg2afAfo"><div class="lab" data-page-node-id="Arv6I614gesoVNrZBVzBkj">头部电商裁员</div><div class="num" data-to="6000" data-page-node-id="ukONHRnxjgoKaFNZNVqf8L">0</div><div class="desc" data-page-node-id="E0UAFoHeeJAw7F0WBdUNfA">某头部电商 AI<br data-page-node-id="odoUhHYdAQbNgni10na3Uc">替代 6000 人工坐席</div></div>
-      <div class="stat blue rv" data-page-node-id="bjPgXgTYeVBXfjM9jCPoa5"><div class="lab" data-page-node-id="hAgf1lcJtTrxotfDiciCQd">基础审计岗削减</div><div class="num" data-to="30" data-suf="%" data-page-node-id="w0mWHWa0f0xaGFdwDBjzfV">0</div><div class="desc" data-page-node-id="CGnKPdaHSa8xD1gJhEE5sD">普华永道砍 30%<br data-page-node-id="Ya4D5H7oTd7loe7WlV0tJ8">基础审计岗</div></div>
-      <div class="stat rv" data-page-node-id="dbrfQ8pif1kTDAMGS6Qnuj"><div class="lab" data-page-node-id="ilARkQAwFXsDNBL6URlO1p">翻译产能提升</div><div class="num" data-to="4" data-suf="×" data-page-node-id="n6EpuCSdgVrnrCTHnS2OW3">0</div><div class="desc" data-page-node-id="BCMD88veQ41kKUskZDkiH0">头部翻译公司<br data-page-node-id="ltyR95xtxaJFxcT5ruGJjl">人均产能 +300%</div></div>
-    </div>
-
-    <div class="quote rv" data-page-node-id="OEzCNs8zpjpgIzOIJo3nJW">
-      <div data-page-node-id="RPT4ShHMgL77IpXVRTvtfV">
-        <div class="q-lab" data-page-node-id="XDhqZHGPFdAsrAUPLhU4td">KEY INSIGHT</div>
-        <div class="q-text" data-page-node-id="c6PbmLNsFn2FFo4JgJZ2Bf">AI 不是在「抢」工作，<br data-page-node-id="vh0w2WRWey0dhOSJ3jqdAD">是在重新定义工作</div>
-      </div>
-      <div class="q-num" data-page-node-id="pgHcaqZPDZHidqgC4ytBSi">
-        <b data-page-node-id="e4DZLH57XHB9vWqP3ttzFu">+170M</b>
-        <span data-page-node-id="GveBQLIc8UdjojapWHMeL4">麦肯锡：到 2030 年将创造 1.7 亿新岗位</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 02 地图 ============ -->
-<section id="s2" class="sec sec-light" data-page-node-id="7W3eGwxD6KFBp77mE2CKCB">
-  <div class="wrap" data-page-node-id="6Lg8WT4g6z6VGuxqYnaVrn">
-    <div class="eyebrow rv" data-page-node-id="d7vv1CoxEZAz7OJEtfRpfG"><i data-page-node-id="2d1mosEn63mBmqiYG0z4Ea"></i>CHAPTER 02 · 地图</div>
-    <h2 class="title rv" data-page-node-id="g1ObOaRVHGm8nFP6rfszfP">岗位风险地图：谁先被 AI 拿下？</h2>
-    <p class="lead rv" data-page-node-id="DEzeOSrU8dXudXjXsnXD9K">答案藏在「输入 - 规则 - 输出」这条线里。点击筛选，看看你的岗位在哪一区。</p>
-
-    <div class="filters rv" data-page-node-id="NDKIOBtvnudlP77nuEh1SG">
-      <button class="filter on" data-f="all" data-page-node-id="ctTA79e1tXX8Xi4oAEDwzX"><i style="background:#064E3B" data-page-node-id="spNHCz7bivB4qlBPjrdOGH"></i>全部岗位</button>
-      <button class="filter" data-f="hi" data-page-node-id="NrreaYnLTUfOZKbY7TeJEk"><i style="background:#F59E0B" data-page-node-id="EXJ7mNGtRo2SYSi4NrPTLD"></i>高替代 &gt;80%</button>
-      <button class="filter" data-f="mid" data-page-node-id="sB83iU29quIhRIJ73FnYzC"><i style="background:#0EA5E9" data-page-node-id="csCGMD6BVoUviZsYfw9Xv7"></i>中高替代 50-80%</button>
-      <button class="filter" data-f="safe" data-page-node-id="1YVHfe0Rnr6EYuI8FyD3Yg"><i style="background:#10B981" data-page-node-id="wbOu126SuG6pFKSkJmBrB7"></i>暂时安全</button>
-    </div>
-
-    <div class="job-grid rv" id="jobGrid" data-page-node-id="aDi3htjaNx9kaN7CnIdhQK"></div>
-
-    <div class="chart-box rv" data-page-node-id="y7L77Yi19YuRLuGnSbucDf">
-      <div class="chart-row" data-page-node-id="WU55QORx2PH4sCdZpivU0Q">
-        <div data-page-node-id="6QyvaGdd2RScMOpy0j4Sjz">
-          <h4 data-page-node-id="H0r8AQZDZdPkwf2SW5gQUL">替代率对比</h4>
-          <p data-page-node-id="6SPHU4FKhucx4jrbLT8u7x">高风险岗位替代率普遍 &gt; 80%，中高风险岗位则集中在 50-80%</p>
-          <div style="position:relative;height:300px" data-page-node-id="AqwWg7kSSEEGEb0FuhbUXE"><canvas id="cBar" role="img" aria-label="各岗位 AI 替代率条形图" data-page-node-id="Cl2yEHBWGzHz7JcgCWnGjP">替代率数据图表</canvas></div>
+    <!-- 导航栏 -->
+    <nav>
+        <a href="#" class="logo">FSH</a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home" onclick="closeMenu()">首页</a></li>
+            <li><a href="#about" onclick="closeMenu()">关于</a></li>
+            <li><a href="#skills" onclick="closeMenu()">技能</a></li>
+            <li><a href="#projects" onclick="closeMenu()">项目</a></li>
+            <li><a href="#blog" onclick="closeMenu()">博客</a></li>
+            <li><a href="#contact" onclick="closeMenu()">联系</a></li>
+        </ul>
+        <div class="menu-toggle" id="menuToggle" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
-        <div data-page-node-id="HydL9DXJxaYwYsPfSGxdQh">
-          <h4 data-page-node-id="zp6SMxLLLE5NYvmt98akTB">关键洞察</h4>
-          <p data-page-node-id="Y6NAEdXO7DBSa9fcQUtWUP">AI 替代的不是「岗位」，而是岗位里的「任务模块」</p>
-          <div style="display:flex;flex-direction:column;gap:14px;margin-top:24px" data-page-node-id="3UJdb33Z2hUBGzrUUBpPEv">
-            <div style="padding:20px;background:var(--surface);border-radius:11px;border-left:4px solid var(--accent)" data-page-node-id="SfHdgKjBmHFbkAWC35rThl">
-              <b style="font-size:15px;color:var(--primary);display:block;margin-bottom:6px" data-page-node-id="ox3m1ck51xTM7HtEZCqfgS">共同特征</b>
-              <span style="font-size:13px;color:var(--muted);line-height:1.7" data-page-node-id="gCWGmejw0gdqHgmnvIW4Xo">高替代岗位都具备「输入-规则-输出」高度可预测的特征，AI 通过模式识别 + 自动化，做到成本更低、错误更少、24 小时不间断。</span>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero" id="home">
+        <div class="hero-bg">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-avatar">F</div>
+            <h1>Hi, I'm <span class="highlight">FlyerSoHigh</span></h1>
+            <p class="subtitle">开发者 / 写作者 / 终身学习者。热爱技术，喜欢探索，用代码构建有趣的东西。</p>
+            <div class="hero-buttons">
+                <a href="#projects" class="btn btn-primary">查看项目</a>
+                <a href="#contact" class="btn btn-outline">联系我</a>
             </div>
-            <div style="padding:20px;background:var(--surface);border-radius:11px;border-left:4px solid var(--secondary)" data-page-node-id="ktlaEc0TFtbszxs9B6rZCR">
-              <b style="font-size:15px;color:var(--primary);display:block;margin-bottom:6px" data-page-node-id="xMBmdeiqtaAzs7kk3Yyj5X">并非消失</b>
-              <span style="font-size:13px;color:var(--muted);line-height:1.7" data-page-node-id="cSTlMnwmDHC8GAvdD0msCI">中高风险岗位并非「消失」，而是从执行者转型为监督者与优化者。AI 承担 80% 基础工作，人类负责剩余 20% 的「非标决策」。</span>
+        </div>
+        <div class="scroll-indicator">
+            <span></span>
+        </div>
+    </section>
+
+    <!-- About 区域 -->
+    <section id="about">
+        <div class="section-header fade-in">
+            <span class="section-tag">关于我</span>
+            <h2>了解我更多</h2>
+        </div>
+        <div class="about-grid">
+            <div class="about-image fade-in">
+                <div class="image-placeholder">&#9733;</div>
             </div>
-            <div style="padding:20px;background:var(--surface);border-radius:11px;border-left:4px solid var(--green)" data-page-node-id="HThRQj3UYLDDv8uW8iv7Xf">
-              <b style="font-size:15px;color:var(--primary);display:block;margin-bottom:6px" data-page-node-id="vDK2n85iITpNF15b6GG7GQ">安全区逻辑</b>
-              <span style="font-size:13px;color:var(--muted);line-height:1.7" data-page-node-id="kErlgHTbrFCnnTyUwRYWfo">依赖情感共鸣、物理在场、即兴判断的工作暂时安全。熟练技工岗位需求预计增长 8-12%，超过整体劳动力市场平均的 3%。</span>
+            <div class="about-text fade-in">
+                <h3>一个热爱技术的创造者</h3>
+                <p>你好！我是一个对技术充满热情的开发者，喜欢用代码解决实际问题。我对 Web 开发、人工智能和开源项目有着浓厚的兴趣，目前正在学习和探索更多技术领域。</p>
+                <p>我相信技术可以改变世界，希望通过自己的学习和分享，能够帮助更多人走进技术的奇妙世界。</p>
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <div class="number">10+</div>
+                        <div class="label">项目经验</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number">5+</div>
+                        <div class="label">技术栈</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number">100+</div>
+                        <div class="label">技术文章</div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<!-- ============ 03 机制 ============ -->
-<section id="s3" class="sec sec-tint" data-page-node-id="VvkhttGIZe3US4LBQ2qJo4">
-  <div class="wrap" data-page-node-id="cZAcr4pxR0rgBE3HO03mWB">
-    <div class="eyebrow rv" data-page-node-id="yGm99Ol8yDV7pZ9SpV1IGl"><i data-page-node-id="ryRkb3eBvkFIIQJX9GCXaG"></i>CHAPTER 03 · 机制</div>
-    <h2 class="title rv" data-page-node-id="bsMm8egE4DonX037JAU8FE">AI 替代一个岗位，要走四步</h2>
-    <p class="lead rv" data-page-node-id="E7IJyooHOI7m57fa0wTinT">替代是分层的，不是一刀切。点击任意一步展开细节。</p>
-
-    <div class="steps" data-page-node-id="2X7BqPnwelDBaMtYfzBzR4">
-      <div class="step rv" data-step="0" data-page-node-id="yQtV2eBUUySV7OAD7xOcdk">
-        <div class="step-head" data-page-node-id="GDXw63opXdvLUer1fPyAET"><div class="step-n" data-page-node-id="bfHaR27GUieJV75RcWpY7V">1</div><div class="step-badge" data-page-node-id="ib6QcgN1zirO1a5iAIxMAx">STEP 01</div></div>
-        <h4 data-page-node-id="3um1r8SCznxp5b8AIBGqNs">接管规则部分</h4>
-        <p data-page-node-id="fU6dNMBPc9Pk5qEs9QzV38">AI 先吃掉「输入-规则-输出」中可标准化、可重复的那 80%。这一步最快，通常只需要几个月。</p>
-        <div class="step-meter" data-page-node-id="LDgz7uFkmGIl7I5JJ9zgnL"><div class="ml" data-page-node-id="WkmIv0TfFmMTwxTTylFuFS"><span data-page-node-id="Bit1seFpuACl3fuS8eMYOt">自动化程度</span><b data-page-node-id="7a3JCRynvez6ZnLzop6nfR">80%</b></div><div class="mb" data-page-node-id="0iZh86VD0xeghjswnrTr2B"><span data-w="80" style="background:var(--secondary)" data-page-node-id="1RfuiVg7ADCNwHvCjK1ta4"></span></div></div>
-      </div>
-      <div class="step rv" data-step="1" data-page-node-id="KJnLiMpDnIWslG4WE3CHk4">
-        <div class="step-head" data-page-node-id="e8DpmV7sToSV2tvIm2g3rl"><div class="step-n" data-page-node-id="gkYXrM0QWmq8DKJuea1lCd">2</div><div class="step-badge" data-page-node-id="wx88ydcuDGnod7EsTFVxX0">STEP 02</div></div>
-        <h4 data-page-node-id="sbqJja6gzxkzXsygu6A5kM">人类退守异常</h4>
-        <p data-page-node-id="mo62AijYqEGQ5CvDq20Xg3">剩下 20% 的「非标决策」留给人：异常、情感、复杂判断。岗位开始变窄，但不消失。</p>
-        <div class="step-meter" data-page-node-id="oqx76bBB51Ok03gMrhgtC0"><div class="ml" data-page-node-id="LmFV4VEWld0cqX0fb4MAE8"><span data-page-node-id="5YaHRwWX3Gk6GXHGsl6djU">人类价值占比</span><b data-page-node-id="OuKyVVDEs8Y1IrMDlOeKSG">20%</b></div><div class="mb" data-page-node-id="hu52BFTJ3AsPovy6Lv7Pjs"><span data-w="20" style="background:var(--accent)" data-page-node-id="bBny8aY1h5GV8baxv3RYth"></span></div></div>
-      </div>
-      <div class="step rv" data-step="2" data-page-node-id="vPM0MqDFECwIIk2SbtRu55">
-        <div class="step-head" data-page-node-id="SHmODJPwXUkfkYyb5Atgki"><div class="step-n" data-page-node-id="Mtl0AH8hOq2DSz3RPF5E6c">3</div><div class="step-badge" data-page-node-id="4qatFaGULEzlaC6UN3PKro">STEP 03</div></div>
-        <h4 data-page-node-id="KcZZPFZ1mf2L5bf1dGx1SR">角色重新命名</h4>
-        <p data-page-node-id="iTMhYPHJX0qNrMrOc79eKl">「执行者」变成「监督者」：客服 → 客户体验设计师，翻译 → 本地化策略师，质检 → AI 质检规则设计。</p>
-        <div class="step-meter" data-page-node-id="FPWmmgCXUYanLYfYCJUHzb"><div class="ml" data-page-node-id="w307UeqlJCsN7ex6DS090G"><span data-page-node-id="FS7I6s4eHf0UM5OwJaAFlw">岗位头衔</span><b data-page-node-id="fqATcbs0OhQzbWh9s8cRRx">被重写</b></div><div class="mb" data-page-node-id="oIWZDx7glYjrib5G6jzSJ0"><span data-w="55" style="background:var(--green)" data-page-node-id="lWzGLT2y9lU7JVrpDt5GgL"></span></div></div>
-      </div>
-      <div class="step rv" data-step="3" data-page-node-id="M3mBZV6eem1XtoFqksuoPB">
-        <div class="step-head" data-page-node-id="2MOGzXSIOikD3XDrHGTVsd"><div class="step-n" data-page-node-id="JybnbrFiQKzOTrwXgljJJy">4</div><div class="step-badge" data-page-node-id="04eI0axceoG6kv0pchCZ2Y">STEP 04</div></div>
-        <h4 data-page-node-id="Mi7tSDojvGeFQFRAeVbkHq">新岗位诞生</h4>
-        <p data-page-node-id="veQzx8iDs8FIvXRvSGAeTG">连监督工作也由 AI 完成时，全新基层岗位诞生：AI 训练师、伦理师、Prompt 工程师。闭环完成。</p>
-        <div class="step-meter" data-page-node-id="1qhiWnDkE02bMi3DHB0RNi"><div class="ml" data-page-node-id="7W6NYj3VavYYqGM62jQNEo"><span data-page-node-id="ZICNuDCHSXBCnLsSnci4gG">新岗位</span><b data-page-node-id="YZBrCEXMjvlPGn80RB35hK">5 大类</b></div><div class="mb" data-page-node-id="XwgQmtfJ50XsDOAQnhvuSj"><span data-w="100" style="background:var(--accent)" data-page-node-id="0TISxIO4hCXVsDv2cBZbDS"></span></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 04 新生 ============ -->
-<section id="s4" class="sec sec-light" data-page-node-id="GCPDsNo1UEP8h3tAK9Tak4">
-  <div class="wrap" data-page-node-id="GfEVRDNuHpT0hj4GbhyQH8">
-    <div class="eyebrow rv" data-page-node-id="wxjbBuFMURORMCiUtqyw8L"><i data-page-node-id="hJMeU0MxlIzJvpJOcg7qIQ"></i>CHAPTER 04 · 新生</div>
-    <h2 class="title rv" data-page-node-id="doqmd1xKEGowkgW8aFG5ja">基层岗位没有消失，只是换了位置</h2>
-    <p class="lead rv" data-page-node-id="NOOWXHUWInP7RteXTpc8Qx">新的「基层」，从四条路径里冒出来。</p>
-
-    <div class="paths" data-page-node-id="byDkoPQ8NPkdfEeuF3Z9yW">
-      <div class="path path-a rv" data-page-node-id="yofcubmS9N1GmWTNep4kre">
-        <div data-page-node-id="JiNx9iocNUEaAXh82WSpcx">
-          <div class="path-l" data-page-node-id="ZFKejCIw5RnUjvOPm8FoZg">A</div>
-          <h4 data-page-node-id="AviWABV5py4IqOCyC59hmS">AI 需要被训练</h4>
-          <p data-page-node-id="6IKrUuA0vcF9sJvdLuYXDn">模型不是天生的，需要人喂数据、给反馈、纠正错误。这是最基础、最庞大的一层新「基层」。</p>
+    <!-- Skills 区域 -->
+    <section id="skills">
+        <div class="section-header fade-in">
+            <span class="section-tag">技能专长</span>
+            <h2>我的技术栈</h2>
         </div>
-        <div class="path-tags" data-page-node-id="hieCi0rcsSPNdMD1vAbWnJ"><span data-page-node-id="IOmqCZEFhiq4KV0R1z2Cjs">数据标注师</span><span data-page-node-id="pQyVA9jTGidFZpKuTlf5W5">RLHF 反馈员</span><span data-page-node-id="WTUfE46vfHyeOungAchEuf">Prompt 工程师</span></div>
-      </div>
-      <div class="path path-b rv" data-page-node-id="J3CcfxF8FYB9OhZElD5Zxn">
-        <div data-page-node-id="WKf1Ll6OxxibpDYNp13Vez">
-          <div class="path-l" data-page-node-id="Mvew1QdFOpjHhz9gLyv53y">B</div>
-          <h4 data-page-node-id="62qDi1epF2aFsv8D4gzzO1">AI 需要被连接</h4>
-          <p data-page-node-id="SdT628o4rW3SXjpwXva85b">AI 不懂行业。需要有人把 AI 的能力翻译到医疗、教育、制造等具体场景里。</p>
-        </div>
-        <div class="path-tags" data-page-node-id="n7scx4AeohlwRdFbzfIETs"><span data-page-node-id="j722QAUlPqOCKr6MBwcEEX">AI 产品经理</span><span data-page-node-id="hyf2MD08dq8jEN8NuCAape">行业翻译者</span><span data-page-node-id="vWMmhxKFDPzEAAtWTepOkW">解决方案架构师</span></div>
-      </div>
-      <div class="path path-c rv" data-page-node-id="vgNEFknA6FJv0OHGvre0fn">
-        <div data-page-node-id="9yyL639QXejOAZACqjgapb">
-          <div class="path-l" data-page-node-id="3gIj48HYvt3recGZRoXGh8">C</div>
-          <h4 data-page-node-id="vnRRGUw0KmhLqcInKETsZ7">AI 需要被约束</h4>
-          <p data-page-node-id="1mgWeXUTu1yNQTv0WQ9xPx">AI 越强越危险。随着全球监管收紧，边界守护者成为刚需，越严越吃香。</p>
-        </div>
-        <div class="path-tags" data-page-node-id="woL2kATDzPcO7YZulDwMci"><span data-page-node-id="78TpoY1go7jEIuvlcIqtn5">AI 伦理师</span><span data-page-node-id="OW742vFGcpP8P0nT8BBsfD">算法审计</span><span data-page-node-id="1AvRKW1onMDHcElZAqrBp8">合规安全</span></div>
-      </div>
-      <div class="path path-d rv" data-page-node-id="2HR4a2tXNqWM8ZWvpRQGMx">
-        <div data-page-node-id="UwRl5L27VDQwGGB0bdVNOS">
-          <div class="path-l" data-page-node-id="INkNKpm52Jd5235lxq5ftJ">D</div>
-          <h4 data-page-node-id="f95WkRCrK9aBopkK20IqWV">AI 创造新需求</h4>
-          <p data-page-node-id="MKOxRrpG6j1KsFBQ9dfmDH">AI 引发的孤独、依赖、心理问题，催生全新的服务业——这是最「人」的一层。</p>
-        </div>
-        <div class="path-tags" data-page-node-id="spDkH3avC7Fl3nvVARWXog"><span data-page-node-id="bvHOzmQFNy1V22k5Md8iwI">AI 陪伴治疗师</span><span data-page-node-id="BmTlLpVGrAf9CIOBei08H3">数字人运营</span><span data-page-node-id="wIYf6cmFQ9zd91Jd4nfi4U">数字遗产规划</span></div>
-      </div>
-    </div>
-
-    <!-- 五大族群 -->
-    <div class="chart-box rv" style="margin-top:56px" data-page-node-id="ehT6Xv27ERfP4o13j7ZAsx">
-      <div class="chart-row" data-page-node-id="Z3kEXATaIKs78zF2EtqtLq">
-        <div data-page-node-id="0fA0PVg6CtIkciQZhWm7a3">
-          <h4 data-page-node-id="VX2GcK7LxuWcEfd1pRpTWS">新基层岗位 · 五大族群</h4>
-          <p data-page-node-id="DECe65niUgMfI8ZbKzbJvf">把鼠标移到图例上，查看每个族群的具体岗位</p>
-          <div style="position:relative;height:320px" data-page-node-id="LZV0eR2bfQ8uPZERyg8so4"><canvas id="cPie" role="img" aria-label="新基层岗位五大族群饼图" data-page-node-id="qHlVrs3nJjnYnFk3YLZIO6">五大族群分布图</canvas></div>
-        </div>
-        <div class="legend" id="legend" data-page-node-id="kMQYcvHzIr2r2z9bFwk4Hh"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 案例 1 ============ -->
-<section class="sec sec-dark" data-page-node-id="zfDGvnJ1VyhDQAUQ8oCYQ9">
-  <div class="wrap" data-page-node-id="uGd9xQlpCoGIgp6s3QIUAz">
-    <div class="eyebrow rv" data-page-node-id="gt7z0OJlZfD0ZAQnXJY3d8"><i data-page-node-id="YshtFOJJ9GQpVcMbNXKAqB"></i>CASE · 新型服务者</div>
-    <div class="case-head rv" data-page-node-id="3lChGPMdFpGNOTw6lkEMRJ">
-      <div data-page-node-id="zXQJe8tfbwHkM1Flw18pJA">
-        <div class="case-big" data-page-node-id="KNaRDTspaDfqKtzcgGiCVs"><span class="w" data-page-node-id="VtMr74oxvS8tSYCkDsCuht">AI 陪伴</span><br data-page-node-id="CsdPm2PPPyfE5chBhDIRXq"><span class="y" data-page-node-id="hTrKS5GSjClffR6B0SepFO">治疗师</span></div>
-        <p class="case-sub" data-page-node-id="tmLTMVIrJue5dZ59Gll1Af">EVA AI 已开出 $200/ 次的薪酬，<br data-page-node-id="U9NtBSV9U0sx3i3rgEBWd0">全球第一个「AI 关系治疗」岗位正式诞生。</p>
-      </div>
-      <div class="case-stats" data-page-node-id="IBE4nNiedJ42d3g8vTs2Rj">
-        <div class="case-stat" data-page-node-id="GSCG1DnZk8H2rr2cpOR0Wn">
-          <div class="cs-l" data-page-node-id="WDk6Md6jCEaSA20dGroyxo">需求侧</div>
-          <div class="cs-n" data-page-node-id="uC6s584NsOjG8ZY3ysyu1t">72%</div>
-          <div class="cs-d" data-page-node-id="GCabD6SmvuETADNY7ekXNH">EVA AI 用户希望有治疗师专门处理<br data-page-node-id="qRq1KVzw22NbYlhURY8829">AI 关系中的情感问题</div>
-        </div>
-        <div class="case-stat" data-page-node-id="iomIIKn99Wg14voNnbnCKS">
-          <div class="cs-l" data-page-node-id="uOoYbVt8lhXNVY6LinB1w6">市场侧</div>
-          <div class="cs-n" data-page-node-id="2OGdMon1LawOIneSB9VMpb">3亿 <span style="font-size:18px;font-weight:500;color:#A7D4C5" data-page-node-id="orH46snxbG84EoqT3UGCCE">vs</span> 40万</div>
-          <div class="cs-d" data-page-node-id="eMVnskfPGo2ccF0DB8RC4O">中国心理亚健康人口 vs 专业咨询师<br data-page-node-id="bxLKQOUz9XusG52lpZGAnq">巨大缺口正被 AI 填补</div>
-        </div>
-        <div class="case-stat hl" data-page-node-id="m8fcYKIea53vEgScrJdC7N">
-          <div class="cs-l" data-page-node-id="DjCECkIBTFClJiysVoayut">薪资侧</div>
-          <div class="cs-n" data-page-node-id="C8L4pH9o6gwADl06H2WDK6">¥12K-35K</div>
-          <div class="cs-d" data-page-node-id="EM0THJgT0r8uhXtWG7NpqB">资深 AI 心理咨询师月薪<br data-page-node-id="NQ61q9M9noEnmiN3WMYfb2">专家级顾问年薪可达 35-90 万</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 案例 2 ============ -->
-<section class="sec sec-tint" data-page-node-id="IvRpEMZ72MSoYEyBsKbrxB">
-  <div class="wrap" data-page-node-id="WHKnxgM1AWdZVkCDhW589K">
-    <div class="eyebrow rv" data-page-node-id="jEkage3PGDkjGMDDY8EvCN"><i data-page-node-id="k4zkay4iGfAnSYocSWHbg5"></i>CASE · 看不见的脚手架</div>
-    <h2 class="title rv" data-page-node-id="gKjfkEoW2UVmKkoLCyZAii">AI 不是「自动学习」，<br data-page-node-id="QzbJaQnQ4Vrm8jU7J5CrJl">是「被一群人教会的」</h2>
-
-    <div class="chart-box rv" style="margin-top:44px" data-page-node-id="Bvvyz3xDyuOUEr0v1dnFcJ">
-      <div class="chart-row" data-page-node-id="G2rENmzddSAv3gSPCWmXUq">
-        <div class="map-wrap" data-page-node-id="bH2cUVBOdB85lMgERxu9Op">
-          <h4 style="font-size:15px;color:var(--primary);font-weight:700;margin-bottom:4px" data-page-node-id="T1KCf4O6XrncXAr4fvaJaI">全球数据标注中心</h4>
-          <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px" data-page-node-id="IRGgjE4FknfwrzGZkr0b1n">鼠标悬停查看各地时薪</p>
-          <div id="tip" data-page-node-id="3dIFnFHr912FGOeuvl3LZt"></div>
-          <svg viewBox="0 0 548 348" role="img" aria-label="全球数据标注中心分布图" data-page-node-id="zhg5yuYodhvwxtpsRLJK9Q">
-            <path d="M 60 80 L 100 60 L 140 70 L 170 90 L 180 130 L 160 160 L 130 170 L 100 165 L 80 140 L 60 110 Z" fill="#D1FAE5" stroke="#064E3B" stroke-width="0.5" data-page-node-id="EjA2Kt8GeT7fFba0WKlxIM"/>
-            <path d="M 130 200 L 150 190 L 165 210 L 160 260 L 145 290 L 130 295 L 120 270 L 115 230 Z" fill="#D1FAE5" stroke="#064E3B" stroke-width="0.5" data-page-node-id="BfblEO68nsf7OCyB4fqfQW"/>
-            <path d="M 260 70 L 290 60 L 310 80 L 305 110 L 285 120 L 270 110 L 260 90 Z" fill="#D1FAE5" stroke="#064E3B" stroke-width="0.5" data-page-node-id="Szgaitt1KdyWBovixewDHK"/>
-            <path d="M 285 130 L 320 130 L 335 170 L 325 230 L 305 270 L 285 280 L 275 240 L 270 180 Z" fill="#D1FAE5" stroke="#064E3B" stroke-width="0.5" data-page-node-id="8UQf5ccSeMPglqH5DQtzDr"/>
-            <path d="M 320 70 L 400 60 L 450 80 L 480 110 L 470 150 L 440 170 L 410 165 L 380 180 L 350 170 L 330 140 L 320 100 Z" fill="#D1FAE5" stroke="#064E3B" stroke-width="0.5" data-page-node-id="a8KHmHOWNu2dwR7zuuELjq"/>
-            <path d="M 460 230 L 490 220 L 500 245 L 485 265 L 460 260 Z" fill="#D1FAE5" stroke="#064E3B" stroke-width="0.5" data-page-node-id="9f9sB6pIAp3jurHulLAQyz"/>
-            <g class="mp" data-n="内罗毕 Nairobi" data-w="$1.5 / 小时" data-page-node-id="Cc4bDrdau9XBGuDCpALL8J"><circle cx="305" cy="195" r="9" fill="#F59E0B" data-page-node-id="bQkinODxoolqnJCYo44PxN"/><circle cx="305" cy="195" r="16" fill="#F59E0B" opacity="0.3" data-page-node-id="1CQ3IvlFwNmwJHhQQYeqC9"/><text x="322" y="200" font-size="11" fill="#064E3B" font-weight="600" data-page-node-id="RlPU4DezKhPu3ciIdDrbwa">Nairobi</text></g>
-            <g class="mp" data-n="班加罗尔 Bangalore" data-w="$2 / 小时" data-page-node-id="uED3BudyMl2gUPv09M31Vh"><circle cx="395" cy="155" r="9" fill="#F59E0B" data-page-node-id="AMDAlH2CZIKwDJeZVkY1H2"/><circle cx="395" cy="155" r="16" fill="#F59E0B" opacity="0.3" data-page-node-id="9tWzRGrdUEnPg1BZc9ts1H"/><text x="412" y="160" font-size="11" fill="#064E3B" font-weight="600" data-page-node-id="JHxAYdd0sirv3iVvzuFBFT">Bangalore</text></g>
-            <g class="mp" data-n="马尼拉 Manila" data-w="低于当地最低工资" data-page-node-id="AzobTwf8b0bwDoEBzv1OR1"><circle cx="450" cy="178" r="7" fill="#0EA5E9" data-page-node-id="xbfBXUt7q2F6wUsffCpw9v"/><text x="432" y="200" font-size="10" fill="#064E3B" data-page-node-id="BYxds08KRm2t7oSgaxaDnc">Manila</text></g>
-            <g class="mp" data-n="麦德林 Medellín" data-w="$0.05 - 0.25 / 单任务" data-page-node-id="gv4bDktcNMJDJ9i9wGxrov"><circle cx="135" cy="225" r="7" fill="#0EA5E9" data-page-node-id="UZkgFJ69phYaf7ThefTaTE"/><text x="112" y="248" font-size="10" fill="#064E3B" data-page-node-id="5aWJ11APslc6DNZ6aIkyZa">Medellín</text></g>
-            <g class="mp" data-n="硅谷 / 欧美专家岗" data-w="$30 - 50 / 小时" data-page-node-id="sOQ2rBSFyCOmUy5t4LEzCo"><circle cx="95" cy="110" r="7" fill="#10B981" data-page-node-id="AWtEgDStPxMyzpx6R5DaRc"/><text x="106" y="95" font-size="10" fill="#064E3B" data-page-node-id="5OQSYcOtGOhuBwKfIQ7pMt">US / EU</text></g>
-            <g transform="translate(20,326)" data-page-node-id="JDg8Ltyf9YYuyhi0xHPVX2"><circle cx="6" cy="6" r="6" fill="#F59E0B" data-page-node-id="BSiFZigJK1BgCG4J2IAYef"/><text x="20" y="10" font-size="11" fill="#6B7280" data-page-node-id="pBWOQh0mvTEE7l5XyECgJJ">低薪标注中心</text><circle cx="140" cy="6" r="6" fill="#0EA5E9" data-page-node-id="qR1GQupvwIfq3gayR2kLsm"/><text x="154" y="10" font-size="11" fill="#6B7280" data-page-node-id="B1zaLxvnH5odZqWG3q5VZJ">计件制平台</text><circle cx="245" cy="6" r="6" fill="#10B981" data-page-node-id="z7GHtf1f5l3W4py2rqrQAk"/><text x="259" y="10" font-size="11" fill="#6B7280" data-page-node-id="rfuc01WK2q9LC4ij0GimZ5">专家标注岗</text></g>
-          </svg>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:14px" data-page-node-id="pBiDnGWoAFk26HffgkDr7i">
-          <div style="padding:18px;background:var(--primary);border-radius:11px" data-page-node-id="8f9uK3uHs1pdXph6nzmCqf">
-            <div style="font-size:11px;color:var(--accent);letter-spacing:2px;margin-bottom:8px" data-page-node-id="mi2hBPSMW4SfhY945hkpdj">PARADOX · 矛盾</div>
-            <div style="font-size:17px;color:#fff;font-weight:700;line-height:1.55" data-page-node-id="BJhpKb7LVuMFoyAof2ykw2">教 AI 学会识别暴力内容的人，<br data-page-node-id="hJcmy38NiFIP4j5tHU5OS0">时薪只有 $1.5</div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" data-page-node-id="W1g0ChOsWOelADuUSMrZsy">
-            <div style="padding:18px;background:var(--white);border:1px solid var(--line);border-radius:11px" data-page-node-id="lIn4zke32F7cm5jQO0DjbG">
-              <div style="font-size:11.5px;color:var(--muted);margin-bottom:6px" data-page-node-id="BsdJIKzctgkw7vgEALapj5">标注市场规模</div>
-              <div style="font-size:24px;font-weight:800;color:var(--primary);line-height:1.15" data-page-node-id="fGTzORLPIPmUuUOEQHnSU7">$3.8B<br data-page-node-id="ReqUtxB2NaOhM0IyzkE2Pd"><span style="font-size:15px;color:var(--accent)" data-page-node-id="25mF7bdTSAcp5FbeRhNaqz">→ $17B</span></div>
-              <div style="font-size:11px;color:var(--muted);margin-top:6px" data-page-node-id="2CmE63NgKbyWelCxQJPaEe">2024 → 2029</div>
+        <div class="skills-grid">
+            <div class="skill-card fade-in">
+                <div class="skill-icon">&#60;&#47;&#62;</div>
+                <h3>前端开发</h3>
+                <p>熟练掌握 HTML、CSS、JavaScript，能够构建响应式和交互丰富的 Web 应用。</p>
+                <div class="skill-tags">
+                    <span>HTML5</span>
+                    <span>CSS3</span>
+                    <span>JavaScript</span>
+                    <span>React</span>
+                </div>
             </div>
-            <div style="padding:18px;background:var(--white);border:1px solid var(--line);border-radius:11px" data-page-node-id="M0tp0hIhtryCtH6c6LRDuS">
-              <div style="font-size:11.5px;color:var(--muted);margin-bottom:6px" data-page-node-id="scW2g2mXDs5lFMBKLjmfGj">肯尼亚在线工人</div>
-              <div style="font-size:30px;font-weight:800;color:var(--accent);line-height:1.15" data-page-node-id="kQF028Ftfl3CHEohv3eNtL">1.2M+</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:6px" data-page-node-id="OWqHHv0ooGpsm0JvT4CzB0">仅肯尼亚一国</div>
+            <div class="skill-card fade-in">
+                <div class="skill-icon">&#9729;</div>
+                <h3>后端开发</h3>
+                <p>熟悉 Python、Node.js 等后端技术，能够设计 RESTful API 和数据库架构。</p>
+                <div class="skill-tags">
+                    <span>Python</span>
+                    <span>Node.js</span>
+                    <span>SQL</span>
+                    <span>API</span>
+                </div>
             </div>
-          </div>
-          <div style="padding:18px;background:var(--surface);border-radius:11px;display:flex;align-items:center;gap:14px;border:1px solid var(--line)" data-page-node-id="fpJQzqwVSnchNYJuYsfuaV">
-            <div style="width:50px;height:50px;border-radius:25px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:800;flex-shrink:0" data-page-node-id="9bxWWW2brA1DstvP0AMwR2">$</div>
-            <div data-page-node-id="7QjFOQmbexCjZqE070rugQ">
-              <div style="font-size:13.5px;color:var(--primary);font-weight:700;line-height:1.6" data-page-node-id="ug0kGa8jKvUPsrI1ek24c0">低端任务 $1.5/h<br data-page-node-id="oojR7oFL1JcITyhkX5jNkH">专家任务 $30-50/h</div>
-              <div style="font-size:11.5px;color:var(--muted);margin-top:4px" data-page-node-id="0F17AnA12AaBTX3QfJfWEJ">同一个岗位名，两种命运</div>
+            <div class="skill-card fade-in">
+                <div class="skill-icon">&#9881;</div>
+                <h3>工具与 DevOps</h3>
+                <p>熟练使用 Git、Docker 等开发工具，了解 CI/CD 流程和基础运维知识。</p>
+                <div class="skill-tags">
+                    <span>Git</span>
+                    <span>Docker</span>
+                    <span>Linux</span>
+                    <span>GitHub Pages</span>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<!-- ============ 05 行动 ============ -->
-<section id="s5" class="sec sec-light" data-page-node-id="OwV6BO2vy2HHFOlRoY6tyF">
-  <div class="wrap" data-page-node-id="04i5grUSGKucTiUjH6IB6S">
-    <div class="eyebrow rv" data-page-node-id="IKosmygql6xj4T5FQzvg5i"><i data-page-node-id="CNcpBGTI1o0vG73pa16ZSa"></i>CHAPTER 05 · 行动</div>
-    <h2 class="title rv" data-page-node-id="0nyGNypvOvTSd3M5xzbyln">三条铁律 + 四个关键技能</h2>
-    <p class="lead rv" data-page-node-id="cOlm7Co2FcK3GNcnYbnion">不是跑得更快，而是站到对的位置。</p>
-
-    <div class="rules" data-page-node-id="e7sTXZscjwI3VM8MSIzRuH">
-      <div class="rule rule-1 rv" data-page-node-id="i58fSs5b09l9FCAWnOGwog">
-        <div data-page-node-id="Fdof6etXkOWgYN7HbivPlD">
-          <div class="rule-n" data-page-node-id="kefEnDLQF2nd1wHeU9fPGs">01</div>
-          <h4 data-page-node-id="l99C3H4SKVqIhHBEbBTQTL">做 AI 做不好的事</h4>
-          <p data-page-node-id="NBmwBM6l2USyFNh3I4Gkzp">情感、伦理、复杂判断、人际信任——这些是 AI 的结构性短板。越是需要承担责任、需要真实共情的工作，越难被替代。</p>
+    <!-- Projects 区域 -->
+    <section id="projects">
+        <div class="section-header fade-in">
+            <span class="section-tag">项目展示</span>
+            <h2>精选作品</h2>
         </div>
-        <div class="rule-foot" data-page-node-id="1YP9qrEXyKmIShM5t2cFzC">// 心理咨询、护理、复杂决策</div>
-      </div>
-      <div class="rule rule-2 rv" data-page-node-id="XKe7sdlSF19OixpFCON3MZ">
-        <div data-page-node-id="QJxRnEAEfzK7vlTj7S7b1E">
-          <div class="rule-n" data-page-node-id="XOkvnn2pJ5ZqS8xhIVDfdK">02</div>
-          <h4 data-page-node-id="gzHmVDn22rhUbdA1pWHvVx">做连接 AI 的事</h4>
-          <p data-page-node-id="iVIBH37ZsxNBlJwX6ffqUU">把 AI 能力翻译到具体场景里。AI 不懂你的行业，但懂 AI 又懂行业的人，价值会被放大数倍。</p>
+        <div class="projects-grid">
+            <div class="project-card fade-in">
+                <div class="project-image">&#128187;</div>
+                <div class="project-content">
+                    <h3>个人博客系统</h3>
+                    <p>基于 GitHub Pages 搭建的静态博客，使用 Markdown 写作，支持自定义主题和响应式设计。</p>
+                    <div class="project-tech">
+                        <span>HTML</span>
+                        <span>CSS</span>
+                        <span>JavaScript</span>
+                        <span>GitHub Pages</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="#">在线演示 &rarr;</a>
+                        <a href="#">源代码 &rarr;</a>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card fade-in">
+                <div class="project-image">&#128202;</div>
+                <div class="project-content">
+                    <h3>数据分析工具</h3>
+                    <p>使用 Python 编写的轻量级数据分析工具，支持数据可视化、统计分析和报告生成。</p>
+                    <div class="project-tech">
+                        <span>Python</span>
+                        <span>Pandas</span>
+                        <span>Matplotlib</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="#">在线演示 &rarr;</a>
+                        <a href="#">源代码 &rarr;</a>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card fade-in">
+                <div class="project-image">&#129309;</div>
+                <div class="project-content">
+                    <h3>AI 应用探索</h3>
+                    <p>探索人工智能在日常生活中的应用，包括 AI 辅助写作、图像识别等实验性项目。</p>
+                    <div class="project-tech">
+                        <span>Python</span>
+                        <span>API</span>
+                        <span>Web</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="#">在线演示 &rarr;</a>
+                        <a href="#">源代码 &rarr;</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="rule-foot" data-page-node-id="GtWM65Dxiu12RaTbB3Am8i">// AI 产品经理、解决方案架构师</div>
-      </div>
-      <div class="rule rule-3 rv" data-page-node-id="wRgVgDlq2TBzaJvl029peq">
-        <div data-page-node-id="PkZLheYZbbJ2Gm0tu5w6zj">
-          <div class="rule-n" data-page-node-id="3YjiSuJIkbjGaTDJlP1SS8">03</div>
-          <h4 data-page-node-id="LpiKcdyJewKygr37lee6ew">做教 AI 的事</h4>
-          <p data-page-node-id="QoQD2hRHrHIdA3UneZEnvl">训练、反馈、设计——教 AI 学不会的东西。这是新增岗位最密集的区域，也是门槛最友好的入口。</p>
+    </section>
+
+    <!-- Blog 区域 -->
+    <section id="blog">
+        <div class="section-header fade-in">
+            <span class="section-tag">技术博客</span>
+            <h2>最新文章</h2>
         </div>
-        <div class="rule-foot" data-page-node-id="qX9hUL4CheWJ7PZqVWYujM">// 标注师、Prompt 工程师、伦理师</div>
-      </div>
-    </div>
+        <div class="blog-list">
+            <div class="blog-card fade-in">
+                <div class="blog-meta">
+                    <span>2026-09-01</span>
+                    <span>AI 与未来</span>
+                </div>
+                <h3><a href="#">AI 将会重新定义基层岗位</a></h3>
+                <p>探讨人工智能技术如何影响各行各业的基础岗位，以及我们该如何适应这个快速变化的时代。</p>
+                <a href="#" class="read-more">阅读全文 &rarr;</a>
+            </div>
+            <div class="blog-card fade-in">
+                <div class="blog-meta">
+                    <span>2026-08-15</span>
+                    <span>Web 开发</span>
+                </div>
+                <h3><a href="#">用 GitHub Pages 搭建个人博客完全指南</a></h3>
+                <p>从零开始，手把手教你使用 GitHub Pages 免费部署一个美观的个人博客网站。</p>
+                <a href="#" class="read-more">阅读全文 &rarr;</a>
+            </div>
+            <div class="blog-card fade-in">
+                <div class="blog-meta">
+                    <span>2026-07-20</span>
+                    <span>编程学习</span>
+                </div>
+                <h3><a href="#">零基础学编程：我的学习路径分享</a></h3>
+                <p>分享我从零开始学习编程的经历和心得，包括推荐的学习资源和方法论。</p>
+                <a href="#" class="read-more">阅读全文 &rarr;</a>
+            </div>
+        </div>
+    </section>
 
-    <div class="skills rv" data-page-node-id="BHB0vEGL3soN1cFpQxYqhG">
-      <h4 data-page-node-id="cFvqLzabJNS9duuNr0CLGS">KEY SKILLS · 关键技能</h4>
-      <div class="skill-grid" data-page-node-id="4i9O8zbfCGnppZInzA6Itu">
-        <div class="skill" data-page-node-id="uxpKIhOwwfevR79ZoGknBm"><i style="background:var(--secondary)" data-page-node-id="sBHP0bQ9rbCOXSytSFwfxX">1</i><div data-page-node-id="24eTEAMZ31iOMeumAxBiiP"><b data-page-node-id="rap5pKOa2A6Iw3QrqIQ7hC">AI 工具使用</b><span data-page-node-id="5kBOv1yRJf27UyToTygx61">至少精通 3 个 AI 工具</span></div></div>
-        <div class="skill" data-page-node-id="VvQlRop1SsFVZZ3hwb3x5J"><i style="background:var(--accent)" data-page-node-id="IEZthA4iyHAAc7bAbzRtil">2</i><div data-page-node-id="YfYMPVz4AzxaqYRk1Y6NW3"><b data-page-node-id="1q6AJ3UZnNRsKRC3Rpc9EF">批判思考</b><span data-page-node-id="cSeGp5HIgDevdiN6BtVatx">能判断 AI 输出的可靠性</span></div></div>
-        <div class="skill" data-page-node-id="jZsvTWf5tstV8790BySTP6"><i style="background:var(--primary)" data-page-node-id="Z5Z206EHHEXFPGkCZJDKW1">3</i><div data-page-node-id="3SUHoFxNKNSPEcihWfBobs"><b data-page-node-id="MAnuGAbxmCJpnaqxBOyf3t">领域专业</b><span data-page-node-id="QwHDoFJcl1sBMPsUzgjare">行业知识 × AI = 无可取代</span></div></div>
-        <div class="skill" data-page-node-id="oTfv3pQQGaN9EjmK9bqTWD"><i style="background:var(--green)" data-page-node-id="V403YqMPzdGltVTkwunbDt">4</i><div data-page-node-id="LVsnQhj3kCqe62QgUE1XK7"><b data-page-node-id="0pfvQ7YZalJDLzAsKMVwwQ">沟通与共情</b><span data-page-node-id="5tVjGqDePtrCMinGEEXRum">AI 最难复制的能力</span></div></div>
-      </div>
-    </div>
+    <!-- Contact 区域 -->
+    <section id="contact">
+        <div class="section-header fade-in">
+            <span class="section-tag">联系我</span>
+            <h2>一起聊聊</h2>
+        </div>
+        <div class="contact-container">
+            <div class="contact-info fade-in">
+                <h3>有想法？找我聊聊！</h3>
+                <p>无论是项目合作、技术交流还是随便聊聊，都欢迎联系我。我通常会在 24 小时内回复。</p>
+                <div class="contact-links">
+                    <div class="contact-link">
+                        <div class="icon">&#9993;</div>
+                        <span>flyersohigh@example.com</span>
+                    </div>
+                    <div class="contact-link">
+                        <div class="icon">&#9830;</div>
+                        <span>github.com/flyersohigh</span>
+                    </div>
+                    <div class="contact-link">
+                        <div class="icon">&#9679;</div>
+                        <span>flyersohigh.github.io</span>
+                    </div>
+                </div>
+            </div>
+            <form class="contact-form fade-in" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label for="name">你的名字</label>
+                    <input type="text" id="name" placeholder="请输入你的名字" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">邮箱地址</label>
+                    <input type="email" id="email" placeholder="请输入你的邮箱" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">留言内容</label>
+                    <textarea id="message" placeholder="写点什么吧..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">发送消息</button>
+            </form>
+        </div>
+    </section>
 
-    <div class="quote rv" style="margin-top:56px" data-page-node-id="rZSU6SFcusLwp2CSpNvu7K">
-      <div class="q-text" style="font-size:clamp(16px,2.2vw,22px)" data-page-node-id="CxvSIAvc9RwzpiDigJiC5E">AI 技能溢价 56% · 不会用 AI 的人，正在被甩开</div>
-      <div class="q-num" data-page-node-id="6EOTh80OB9tADpEUpDpMcl"><b data-page-node-id="prwTAraoIt06xn9vsorDWb">56%</b><span data-page-node-id="B6mjl5FAvHDVrR7wy2jmRS">掌握 AI 技能者的薪资溢价</span></div>
-    </div>
-  </div>
-</section>
+    <!-- Footer -->
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/flyersohigh" target="_blank" title="GitHub">&#9733;</a>
+            <a href="#" title="邮箱">&#9993;</a>
+            <a href="#" title="Twitter">&#9679;</a>
+        </div>
+        <p>&copy; 2026 FlyerSoHigh. Made with love and Code.</p>
+    </footer>
 
-<!-- ============ 结尾 ============ -->
-<footer class="ending" data-page-node-id="TH2imPfQnfuS9BEIFjp4M4">
-  <div class="ending-inner" data-page-node-id="wHk0nxlbuTquJzRn18FDaE">
-    <div class="wrap" data-page-node-id="ZBTwLnHDAIIYBk5QJmvR8n">
-      <div style="font-size:12px;color:var(--accent);letter-spacing:4px;margin-bottom:18px" class="rv" data-page-node-id="DrFMyBJllHgf1BdgJxlNgx">THE LAST WORD</div>
-      <h2 class="rv" data-page-node-id="4op0C2ZnhQPgh5pxJVU5QC">工作没有消失，<br data-page-node-id="8DP6rQDlmG7RvUGH9n34r0"><span class="y" data-page-node-id="Lynn6uyrkmmOF70VpqRGTs">消失的是「执行者」</span></h2>
-      <div class="ending-pillars rv" data-page-node-id="hTzUUaPmzUGozTF4Td5PqR">
-        <div class="pillar p1" data-page-node-id="OQHiJwSxhl1IwCDDqlNCum">翻译者</div>
-        <div class="pillar p2" data-page-node-id="lkasAaQSXrX4MAaJPZaNzK">设计者</div>
-        <div class="pillar p3" data-page-node-id="vZzLNnHFx9IVPWZ3qie2nB">守护者</div>
-        <div class="pillar p4" data-page-node-id="FutXGHr9qc4Q2C3HSu2n2A">连接者</div>
-      </div>
-      <div class="ending-foot rv" data-page-node-id="mkqCi2JhzfylNM5yQ8EgTz">
-        <div class="ef-l" data-page-node-id="Exe6jwt0f6zDLt9Xi5Eo4o"><b data-page-node-id="ZZY8LgzIzl5u4Fmkh34IgF">THE JOB MAP</b><span data-page-node-id="EAiecN5d60YmBV8o7fW4xM">AI 基层岗位未来 · 2026.09</span></div>
-        <div class="ef-l" style="text-align:right" data-page-node-id="OE4ZcSTb0rLYkyYhwPN4Hv"><b style="color:#A7D4C5" data-page-node-id="GFJnyNdnTDJ8QCx2z4HS25">SOURCES</b><span data-page-node-id="ZUVUEadO8HYAO9quBJ85gR">麦肯锡 · Gartner · WEF · ILO · 人社部新工种</span></div>
-      </div>
-    </div>
-  </div>
-</footer>
+    <script>
+        // 导航栏滚动效果
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
 
-<script>
-/* ---------- 进度条 + 导航 ---------- */
-const prog=document.getElementById('progress'),nav=document.getElementById('nav');
-const navLinks=[...document.querySelectorAll('.nav-links a')];
-const secs=['s1','s2','s3','s4','s5'].map(id=>document.getElementById(id));
+        // 移动端菜单切换
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
 
-function onScroll(){
-  const h=document.documentElement;
-  const pct=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
-  prog.style.width=pct+'%';
-  nav.classList.toggle('show',h.scrollTop>window.innerHeight*0.6);
-  let cur='';
-  secs.forEach(s=>{if(s&&h.scrollTop>=s.offsetTop-200)cur=s.id;});
-  navLinks.forEach(a=>a.classList.toggle('active',a.dataset.s===cur));
-}
-window.addEventListener('scroll',onScroll,{passive:true});
+        function closeMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.remove('active');
+        }
 
-/* ---------- 揭示动画 ---------- */
-const io=new IntersectionObserver(es=>{
-  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
-},{threshold:.12,rootMargin:'0px 0px -60px 0px'});
-document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
 
-/* ---------- 数字滚动 ---------- */
-const nio=new IntersectionObserver(es=>{
-  es.forEach(e=>{
-    if(!e.isIntersecting)return;
-    const el=e.target,to=+el.dataset.to,suf=el.dataset.suf||'';
-    const dur=1600,t0=performance.now();
-    (function tick(now){
-      const k=Math.min((now-t0)/dur,1);
-      const e2=1-Math.pow(1-k,3);
-      el.textContent=(to>=1000?Math.round(to*e2).toLocaleString('en-US'):Math.round(to*e2))+suf;
-      if(k<1)requestAnimationFrame(tick);
-    })(t0);
-    nio.unobserve(el);
-  });
-},{threshold:.5});
-document.querySelectorAll('.num[data-to]').forEach(el=>nio.observe(el));
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
 
-/* ---------- 岗位数据 ---------- */
-const JOBS=[
-  {n:'数据录入员',r:95,c:'hi',b:'#F59E0B',d:'OCR + RPA 已可自动识别表格票据，速度是人工 10 倍以上'},
-  {n:'基础客服',r:88,c:'hi',b:'#F59E0B',d:'AI 客服处理 85% 常规咨询，7×24 零等待多语言'},
-  {n:'基础会计/记账',r:90,c:'hi',b:'#F59E0B',d:'智能财务系统秒级对账，RPA 自动报税'},
-  {n:'流水线/质检',r:87,c:'hi',b:'#F59E0B',d:'AI 视觉检测准确率 99%+，永不疲劳'},
-  {n:'收银员',r:80,c:'hi',b:'#F59E0B',d:'自助结账 + 无人店已实现 90% 交易无人化'},
-  {n:'初级程序员',r:85,c:'hi',b:'#F59E0B',d:'Copilot 已生成 40% 代码，CRUD 开发首当其冲'},
-  {n:'翻译/本地化',r:60,c:'mid',b:'#0EA5E9',d:'通用领域准确率超 95%，译员数量缩减 30%'},
-  {n:'法律助理',r:50,c:'mid',b:'#0EA5E9',d:'AI 几分钟审查数千份合同，标注 90% 风险点'},
-  {n:'医学影像分析',r:65,c:'mid',b:'#0EA5E9',d:'乳腺癌、肺结节识别已达专家水平'},
-  {n:'内容写手',r:55,c:'mid',b:'#0EA5E9',d:'AI 写初稿 + 人工改稿成为新常态'},
-  {n:'心理咨询师',r:8,c:'safe',b:'#10B981',d:'情感共鸣与复杂创伤处理，AI 难以替代'},
-  {n:'护理员 / 护士',r:5,c:'safe',b:'#10B981',d:'物理在场 + 情感劳动，老龄化社会刚需'},
-  {n:'电工 / 水管工',r:3,c:'safe',b:'#10B981',d:'物理技能 + 即兴判断，需求预计增长 8-12%'},
-  {n:'教师 / 教练',r:10,c:'safe',b:'#10B981',d:'启发、陪伴与个性化引导'},
-  {n:'幼儿照护',r:6,c:'safe',b:'#10B981',d:'肢体接触 + 情绪即时回应'},
-  {n:'治疗师 / 康复师',r:7,c:'safe',b:'#10B981',d:'物理治疗 + 长期信任关系'}
-];
-const LABEL={hi:'高替代',mid:'中高替代',safe:'暂时安全'};
-const grid=document.getElementById('jobGrid');
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
 
-function renderJobs(f='all'){
-  grid.innerHTML='';
-  JOBS.filter(j=>f==='all'||j.c===f).forEach((j,i)=>{
-    const d=document.createElement('div');
-    d.className='job';
-    d.innerHTML=`<div class="job-tag tag-${j.c}">${LABEL[j.c]}</div>
-      <div class="job-top"><div class="job-name">${j.n}</div><div class="job-rate">${j.c==='safe'?'<'+j.r+'%':j.r+'%'}</div></div>
-      <div class="job-note">${j.d}</div>
-      <div class="job-bar"><span style="background:${j.b}"></span></div>`;
-    grid.appendChild(d);
-    setTimeout(()=>{d.querySelector('.job-bar span').style.width=j.r+'%';},80+i*45);
-  });
-}
-renderJobs();
+        // 表单提交处理
+        function handleSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            alert('感谢你的留言，' + name + '！我会尽快回复你。');
+            e.target.reset();
+        }
 
-document.querySelectorAll('.filter').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('.filter').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');
-    renderJobs(b.dataset.f);
-    grid.querySelectorAll('.job-bar span').forEach((s,i)=>{
-      const jobs=JOBS.filter(j=>b.dataset.f==='all'||j.c===b.dataset.f);
-      setTimeout(()=>{s.style.width=jobs[i].r+'%';},80);
-    });
-  });
-});
-
-/* ---------- 条形图 ---------- */
-const barData=JOBS.filter(j=>j.c!=='safe');
-new Chart(document.getElementById('cBar'),{
-  type:'bar',
-  data:{labels:barData.map(j=>j.n),datasets:[{
-    label:'替代率 %',data:barData.map(j=>j.r),
-    backgroundColor:barData.map(j=>j.b),borderRadius:5,barThickness:16
-  }]},
-  options:{
-    indexAxis:'y',responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' 替代率 '+c.raw+'%'}}},
-    scales:{
-      x:{min:0,max:100,grid:{color:'#EEF7F2'},ticks:{color:'#6B7280',font:{size:11},callback:v=>v+'%'}},
-      y:{grid:{display:false},ticks:{color:'#064E3B',font:{size:11.5,weight:'600'}}}
-    }
-  }
-});
-
-/* ---------- 五大族群饼图 + 联动图例 ---------- */
-const CATS=[
-  {n:'看不见的脚手架',c:'#064E3B',code:'SCAFFOLDING',d:'数据标注师 · RLHF 反馈员 · 内容审核 · Prompt 工程师'},
-  {n:'AI 与人的接口',c:'#0EA5E9',code:'INTERFACE',d:'AI 产品经理 · 人机协作设计师 · 行业 AI 翻译者'},
-  {n:'边界守护者',c:'#F59E0B',code:'GUARDIAN',d:'AI 伦理师 · 算法审计 · 合规安全 · 生成式 AI 测试员'},
-  {n:'行业落地者',c:'#10B981',code:'APPLIED',d:'医疗 AI · 智能驾驶测试 · 智慧农业 · 教育 AI'},
-  {n:'新型服务者',c:'#0F4D38',code:'NEW SERVICE',d:'AI 陪伴治疗师 · 数字人运营 · 数字遗产规划'}
-];
-const legend=document.getElementById('legend');
-CATS.forEach((c,i)=>{
-  const d=document.createElement('div');
-  d.className='lg';
-  d.innerHTML=`<i style="background:${c.c}"></i><div class="lg-txt"><b>${c.n}</b><span>${c.d}</span></div><div class="lg-code">${c.code}</div>`;
-  d.addEventListener('mouseenter',()=>pie.setActiveElements([{datasetIndex:0,index:i}]));
-  d.addEventListener('mouseleave',()=>pie.setActiveElements([]));
-  legend.appendChild(d);
-});
-const pie=new Chart(document.getElementById('cPie'),{
-  type:'doughnut',
-  data:{labels:CATS.map(c=>c.n),datasets:[{
-    data:[22,21,19,20,18],backgroundColor:CATS.map(c=>c.c),
-    borderWidth:3,borderColor:'#fff',hoverOffset:14
-  }]},
-  options:{
-    responsive:true,maintainAspectRatio:false,cutout:'58%',
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+' · '+c.raw+'%'}}}
-  }
-});
-
-/* ---------- 步骤卡交互 ---------- */
-const steps=[...document.querySelectorAll('.step')];
-steps.forEach(s=>{
-  s.addEventListener('click',()=>{
-    steps.forEach(x=>x.classList.remove('on'));
-    s.classList.add('on');
-  });
-  s.addEventListener('mouseenter',()=>{
-    if(!steps.some(x=>x.classList.contains('on')))s.classList.add('on');
-  });
-});
-const sio=new IntersectionObserver(es=>{
-  es.forEach(e=>{
-    if(!e.isIntersecting)return;
-    const bar=e.target.querySelector('.step-meter .mb span');
-    if(bar)setTimeout(()=>{bar.style.width=bar.dataset.w+'%';},120);
-    sio.unobserve(e.target);
-  });
-},{threshold:.4});
-steps.forEach(s=>sio.observe(s));
-
-/* ---------- 地图 tooltip ---------- */
-const tip=document.getElementById('tip'),mw=document.querySelector('.map-wrap');
-document.querySelectorAll('.mp').forEach(g=>{
-  g.addEventListener('mousemove',e=>{
-    const r=mw.getBoundingClientRect();
-    tip.innerHTML=`<b>${g.dataset.n}</b>${g.dataset.w}`;
-    tip.style.left=(e.clientX-r.left+14)+'px';
-    tip.style.top=(e.clientY-r.top-10)+'px';
-    tip.classList.add('show');
-  });
-  g.addEventListener('mouseleave',()=>tip.classList.remove('show'));
-});
-
-/* ---------- 键盘导航 ---------- */
-document.addEventListener('keydown',e=>{
-  if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;
-  e.preventDefault();
-  const ids=['s1','s2','s3','s4','s5'];
-  const y=window.scrollY+window.innerHeight/2;
-  let idx=ids.findIndex(id=>document.getElementById(id).offsetTop>y);
-  if(idx===-1)idx=ids.length-1;
-  const t=e.key==='ArrowDown'?Math.min(idx,ids.length-1):Math.max(idx-1,0);
-  document.getElementById(ids[t]).scrollIntoView({behavior:'smooth'});
-});
-
-onScroll();
-</script>
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
