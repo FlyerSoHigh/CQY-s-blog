@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>THE BACKROOMS // 后室数据库 v1.0.3</title>
+<style>
+:root{
+  --bg:#0a0906;
+  --panel:#131108;
+  --panel2:#1b180e;
+  --line:#3a3520;
+  --line2:#5a5230;
+  --wall:#e6d9a8;
+  --wall-dim:#a89b68;
+  --amber:#ffc23d;
+  --amber-d:#c08a12;
+  --red:#c0392b;
+  --green:#7aa653;
+  --ink:#d9cda2;
+  --muted:#8b8160;
+  --mono:"Courier New","Consolas","SFMono-Regular","Sarasa Mono SC","Noto Sans Mono CJK SC","Microsoft YaHei",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--mono);
+  font-size:15px;
+  line-height:1.7;
+  overflow-x:hidden;
+  letter-spacing:.02em;
+}
+::selection{background:var(--amber);color:#000}
+
+/* ===== 全局覆盖层：噪点 / 扫描线 / 暗角 / 荧光灯闪烁 ===== */
+.fx{position:fixed;inset:0;pointer-events:none;z-index:900}
+.grain{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  opacity:.16;mix-blend-mode:overlay;animation:grainShift .6s steps(3) infinite;
+}
+@keyframes grainShift{
+  0%{transform:translate(0,0)}33%{transform:translate(-3%,2%)}66%{transform:translate(2%,-3%)}100%{transform:translate(0,0)}
+}
+.scan{
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.28) 2px 4px);
+  opacity:.5;
+}
+.vig{background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.72) 100%)}
+.flicker{background:var(--amber);opacity:0;mix-blend-mode:overlay;animation:flick 7s infinite steps(1)}
+@keyframes flick{
+  0%,3%{opacity:0}3.4%{opacity:.09}3.8%{opacity:0}
+  41%{opacity:0}41.3%{opacity:.05}41.6%{opacity:0}
+  62%{opacity:0}62.2%{opacity:.12}62.5%{opacity:.03}62.9%{opacity:.1}63.4%{opacity:0}
+  88%{opacity:0}88.4%{opacity:.06}88.8%{opacity:0}100%{opacity:0}
+}
+
+/* ===== 顶部状态栏 ===== */
+.bar{
+  position:fixed;top:0;left:0;right:0;z-index:800;
+  height:46px;display:flex;align-items:center;gap:18px;
+  padding:0 18px;
+  background:rgba(10,9,6,.86);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);
+  font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+}
+.bar .logo{color:var(--amber);font-weight:700;letter-spacing:.24em}
+.bar nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+.bar nav a{
+  color:var(--muted);text-decoration:none;padding:5px 10px;
+  border:1px solid transparent;transition:.18s;
+}
+.bar nav a:hover{color:var(--wall);border-color:var(--line2);background:var(--panel2)}
+.bar nav a.on{color:#000;background:var(--amber);border-color:var(--amber)}
+.stat{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 6px var(--amber)}50%{opacity:.25;box-shadow:none}}
+#prog{position:fixed;top:46px;left:0;height:2px;width:0;background:var(--amber);z-index:801;box-shadow:0 0 8px var(--amber)}
+
+/* ===== HERO / Level 0 ===== */
+.hero{position:relative;height:100vh;min-height:560px;overflow:hidden;background:#000}
+#corridor{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-in{
+  position:relative;z-index:5;height:100%;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;padding:0 24px;
+  background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,.55) 0%,rgba(0,0,0,.15) 45%,transparent 70%);
+}
+.tag{
+  font-size:11px;letter-spacing:.42em;color:var(--amber);
+  border:1px solid var(--amber-d);padding:5px 14px;margin-bottom:26px;
+  background:rgba(255,194,61,.07);
+}
+h1{
+  font-size:clamp(44px,9vw,116px);line-height:.94;font-weight:700;
+  letter-spacing:.16em;color:var(--wall);
+  text-shadow:0 0 28px rgba(255,194,61,.35),0 0 90px rgba(0,0,0,.9);
+  margin-bottom:8px;
+}
+.sub-cn{font-size:clamp(13px,1.7vw,18px);letter-spacing:.5em;color:var(--wall-dim);margin-bottom:30px}
+.hero p.quote{
+  max-width:640px;font-size:14px;color:var(--wall-dim);line-height:2;
+  border-left:2px solid var(--amber-d);padding-left:16px;text-align:left;
+}
+.caret{display:inline-block;width:8px;height:15px;background:var(--amber);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+.scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:6;font-size:10px;letter-spacing:.3em;color:var(--muted);animation:float 2.4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(-50%,0);opacity:.5}50%{transform:translate(-50%,8px);opacity:1}}
+
+/* ===== 通用区块 ===== */
+section{padding:92px 24px;max-width:1180px;margin:0 auto;position:relative}
+.sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.sec-n{font-size:11px;letter-spacing:.3em;color:var(--amber);border:1px solid var(--amber-d);padding:3px 9px}
+.sec-h h2{font-size:clamp(24px,3.4vw,38px);letter-spacing:.1em;color:var(--wall);font-weight:700}
+.sec-d{color:var(--muted);font-size:13px;margin-bottom:38px;max-width:720px;line-height:1.9}
+.rule{height:1px;background:linear-gradient(90deg,var(--line2),transparent);margin:44px 0}
+
+/* ===== 筛选器 ===== */
+.lvtools{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:0}
+.search{display:flex;align-items:center;gap:10px}
+.search input{
+  background:var(--panel);border:1px solid var(--line);color:var(--ink);
+  font-family:var(--mono);font-size:12px;padding:8px 12px;width:220px;
+  letter-spacing:.06em;outline:none;transition:.2s;
+}
+.search input:focus{border-color:var(--amber);box-shadow:0 0 0 1px rgba(255,194,61,.22)}
+.search input::placeholder{color:var(--muted);opacity:.75}
+#lvCount{font-size:11px;color:var(--muted);letter-spacing:.1em;white-space:nowrap}
+.fbtn{
+  background:transparent;border:1px solid var(--line);color:var(--muted);
+  padding:7px 15px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;cursor:pointer;transition:.18s;
+}
+.fbtn:hover{border-color:var(--line2);color:var(--wall)}
+.fbtn.on{background:var(--amber);color:#000;border-color:var(--amber);font-weight:700}
+
+/* ===== 层级卡片 ===== */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+.lv{
+  background:var(--panel);border:1px solid var(--line);padding:22px;
+  position:relative;cursor:pointer;transition:.22s;overflow:hidden;
+  animation:rise .5s ease both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.lv::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber-d);opacity:.5;transition:.22s}
+.lv:hover{border-color:var(--line2);background:var(--panel2);transform:translateY(-3px)}
+.lv:hover::before{opacity:1;width:5px}
+.lv.open{background:var(--panel2);border-color:var(--amber-d)}
+.lv-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.lv-num{font-size:12px;letter-spacing:.2em;color:var(--amber);word-break:break-all;line-height:1.5}
+.lv-name{font-size:20px;color:var(--wall);font-weight:700;letter-spacing:.06em;margin:2px 0 8px}
+.lv-alias{font-size:12px;color:var(--muted);letter-spacing:.14em}
+.badge{font-size:10px;letter-spacing:.14em;padding:4px 9px;border:1px solid;white-space:nowrap;font-weight:700}
+.b1{color:var(--green);border-color:var(--green);background:rgba(122,166,83,.1)}
+.b2{color:var(--amber);border-color:var(--amber-d);background:rgba(255,194,61,.1)}
+.b3{color:#e8834a;border-color:#8a4a24;background:rgba(232,131,74,.1)}
+.b4{color:#e05a5a;border-color:#8a2b2b;background:rgba(224,90,90,.1)}
+.b5{color:#fff;background:var(--red);border-color:var(--red)}
+.b0{color:var(--muted);border-color:var(--line2)}
+.lv-desc{font-size:13px;color:var(--wall-dim);line-height:1.95}
+.lv-more{
+  max-height:0;overflow:hidden;transition:max-height .4s ease;
+  font-size:12.5px;color:var(--muted);line-height:2;
+  border-top:1px dashed transparent;
+}
+.lv.open .lv-more{max-height:340px;margin-top:16px;padding-top:14px;border-top-color:var(--line)}
+.lv-more dl{display:grid;grid-template-columns:74px 1fr;gap:6px 12px}
+.lv-more dt{color:var(--amber-d);letter-spacing:.08em}
+.lv-more dd{color:var(--wall-dim)}
+.hint{font-size:11px;color:var(--muted);margin-top:12px;letter-spacing:.1em;opacity:.7}
+
+/* ===== 实体 ===== */
+.ent{
+  background:var(--panel);border:1px solid var(--line);padding:20px;
+  display:grid;grid-template-columns:56px 1fr;gap:16px;align-items:start;
+  transition:.22s;animation:rise .5s ease both;
+}
+.ent:hover{border-color:var(--amber-d);background:var(--panel2)}
+.ico{width:56px;height:56px;border:1px solid var(--line);background:#0e0d07;display:grid;place-items:center;padding:8px}
+.ico svg{width:100%;height:100%;stroke:var(--amber);fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.ent h3{font-size:16px;color:var(--wall);margin-bottom:3px;letter-spacing:.06em}
+.ent .en{font-size:11px;color:var(--muted);letter-spacing:.16em;margin-bottom:9px;text-transform:uppercase}
+.ent p{font-size:12.5px;color:var(--wall-dim);line-height:1.9}
+.threat{display:flex;align-items:center;gap:8px;margin-top:11px}
+.tbar{flex:1;height:3px;background:#24200f;position:relative}
+.tbar span{position:absolute;left:0;top:0;bottom:0;width:0;transition:width 1s cubic-bezier(.2,.9,.3,1)}
+.tnum{font-size:10px;color:var(--muted);letter-spacing:.1em;min-width:52px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.tg{font-size:10px;color:var(--muted);border:1px solid var(--line);padding:2px 7px;letter-spacing:.08em}
+
+/* ===== 物资 ===== */
+.sup{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.item{background:var(--panel);border:1px solid var(--line);padding:18px;transition:.22s;position:relative}
+.item:hover{border-color:var(--amber-d);transform:translateY(-3px)}
+.item .k{font-size:10px;letter-spacing:.2em;color:var(--amber-d);margin-bottom:6px}
+.item h4{font-size:15px;color:var(--wall);margin-bottom:8px;letter-spacing:.06em}
+.item p{font-size:12.5px;color:var(--wall-dim);line-height:1.9}
+.item .rare{position:absolute;top:14px;right:14px;font-size:9px;letter-spacing:.1em;padding:2px 6px;border:1px solid}
+.r-c{color:var(--green);border-color:var(--green)}
+.r-r{color:var(--amber);border-color:var(--amber-d)}
+.r-s{color:#c07ad8;border-color:#6a3a7a}
+
+/* ===== 法则 ===== */
+.laws{counter-reset:law;display:grid;gap:12px}
+.law{
+  display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:start;
+  background:var(--panel);border-left:2px solid var(--amber-d);padding:16px 18px;transition:.2s;
+}
+.law:hover{background:var(--panel2);border-left-width:4px}
+.law::before{
+  counter-increment:law;content:counter(law,decimal-leading-zero);
+  font-size:20px;color:var(--amber-d);font-weight:700;line-height:1.2;
+}
+.law p{font-size:13.5px;color:var(--wall-dim);line-height:1.9}
+.law strong{color:var(--wall)}
+
+/* ===== 出口 ===== */
+.exit{
+  border:1px solid var(--red);background:linear-gradient(135deg,rgba(192,57,43,.12),transparent);
+  padding:34px;text-align:center;position:relative;overflow:hidden;
+}
+.exit h3{font-size:clamp(20px,3vw,30px);color:#e05a5a;letter-spacing:.16em;margin-bottom:14px}
+.exit p{font-size:13.5px;color:var(--wall-dim);max-width:640px;margin:0 auto 22px;line-height:2}
+.btn{
+  display:inline-block;background:var(--amber);color:#000;border:none;
+  padding:12px 26px;font-family:var(--mono);font-size:12.5px;font-weight:700;
+  letter-spacing:.2em;cursor:pointer;transition:.2s;
+}
+.btn:hover{background:#fff;box-shadow:0 0 24px rgba(255,194,61,.5)}
+.btn.ghost{background:transparent;color:var(--amber);border:1px solid var(--amber-d)}
+.btn.ghost:hover{background:var(--amber);color:#000}
+
+/* ===== noclip 闪白 ===== */
+#flash{position:fixed;inset:0;background:#fff;z-index:9999;opacity:0;pointer-events:none}
+#flash.go{animation:flash .55s ease-out}
+@keyframes flash{0%{opacity:0}8%{opacity:1}100%{opacity:0}}
+#toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--amber);color:#000;padding:11px 20px;font-size:12px;letter-spacing:.12em;
+  z-index:9998;opacity:0;transition:.3s;font-weight:700;pointer-events:none;max-width:90vw;text-align:center;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== 音频开关 ===== */
+#snd{
+  position:fixed;right:20px;bottom:20px;z-index:802;
+  width:44px;height:44px;border:1px solid var(--line2);background:var(--panel);
+  color:var(--muted);cursor:pointer;font-size:15px;transition:.2s;font-family:var(--mono);
+}
+#snd:hover{border-color:var(--amber);color:var(--amber)}
+#snd.on{color:#000;background:var(--amber);border-color:var(--amber)}
+
+footer{border-top:1px solid var(--line);padding:40px 24px;text-align:center;color:var(--muted);font-size:11.5px;letter-spacing:.14em;line-height:2.2}
+footer b{color:var(--amber-d)}
+
+/* ===== 响应式 ===== */
+@media(max-width:720px){
+  .bar{height:auto;padding:9px 12px;gap:8px;flex-wrap:wrap}
+  .bar nav{width:100%;margin-left:0;overflow-x:auto}
+  .bar .stat{display:none}
+  #prog{top:auto;bottom:0}
+  section{padding:60px 16px}
+  .grid,.sup{grid-template-columns:1fr}
+  .ent{grid-template-columns:44px 1fr}
+  .ico{width:44px;height:44px}
+  .exit{padding:22px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="fx grain"></div>
+<div class="fx scan"></div>
+<div class="fx vig"></div>
+<div class="fx flicker"></div>
+<div id="flash"></div>
+<div id="toast"></div>
+
+<header class="bar">
+  <span class="logo">BACKROOMS</span>
+  <span class="stat"><span class="dot"></span><span id="clock">--:--:--</span></span>
+  <nav>
+    <a href="#levels">层级</a>
+    <a href="#entities">实体</a>
+    <a href="#supplies">物资</a>
+    <a href="#laws">法则</a>
+    <a href="#exit">出口</a>
+  </nav>
+</header>
+<div id="prog"></div>
+
+<!-- ============ HERO ============ -->
+<div class="hero">
+  <canvas id="corridor"></canvas>
+  <div class="hero-in">
+    <div class="tag">LEVEL 0 · 教学关卡</div>
+    <h1>THE BACKROOMS</h1>
+    <div class="sub-cn">后　室</div>
+    <p class="quote">
+      如果你不小心在错误的地方脱离现实，你就会进入后室。<br>
+      这里只有旧地毯的潮湿气味、单一色调的黄色壁纸，<br>
+      以及嗡嗡作响的荧光灯。<span class="caret"></span>
+    </p>
+  </div>
+  <div class="scroll-hint">↓ 继续深入</div>
+</div>
+
+<!-- ============ 层级 ============ -->
+<section id="levels">
+  <div class="sec-h"><span class="sec-n">01 / ARCHIVE</span><h2>层级档案库</h2></div>
+  <p class="sec-d">
+    后室由无数层级构成，编号并不连续，也不讲道理。每一层都有独立的空间法则、资源密度与实体分布。
+    点击卡片展开完整档案。
+  </p>
+
+  <div class="lvtools">
+    <div class="filters" id="lvFilters">
+      <button class="fbtn on" data-f="all">全部</button>
+      <button class="fbtn" data-f="1">CLASS 1 安全</button>
+      <button class="fbtn" data-f="2">CLASS 2 不安全</button>
+      <button class="fbtn" data-f="3">CLASS 3 危险</button>
+      <button class="fbtn" data-f="4">CLASS 4 极端</button>
+      <button class="fbtn" data-f="0">未定 / 异常</button>
+    </div>
+    <div class="search">
+      <input id="lvSearch" type="text" placeholder="检索 编号 / 名称 / 别名…" autocomplete="off">
+      <span id="lvCount"></span>
+    </div>
+  </div>
+
+  <div class="grid" id="lvGrid"></div>
+  <p class="hint">※ 档案内容整理自后室社区共创设定，非官方百科，仅供叙事与创作参考。</p>
+</section>
+
+<div style="max-width:1180px;margin:0 auto"><div class="rule"></div></div>
+
+<!-- ============ 实体 ============ -->
+<section id="entities">
+  <div class="sec-h"><span class="sec-n">02 / ENTITIES</span><h2>实体图鉴</h2></div>
+  <p class="sec-d">
+    实体是后室的原住民。它们大多不靠视觉捕猎 —— 声音、气味和你的情绪波动才是暴露你的东西。
+    威胁值由社区共识估算，满值 10。
+  </p>
+  <div class="grid" id="entGrid"></div>
+</section>
+
+<div style="max-width:1180px;margin:0 auto"><div class="rule"></div></div>
+
+<!-- ============ 物资 ============ -->
+<section id="supplies">
+  <div class="sec-h"><span class="sec-n">03 / SUPPLIES</span><h2>可携带物资</h2></div>
+  <p class="sec-d">在后室，背包里的东西决定你还能走多远。但记住：不是所有液体都叫杏仁水。</p>
+  <div class="sup" id="supGrid"></div>
+</section>
+
+<div style="max-width:1180px;margin:0 auto"><div class="rule"></div></div>
+
+<!-- ============ 法则 ============ -->
+<section id="laws">
+  <div class="sec-h"><span class="sec-n">04 / SURVIVAL</span><h2>生存法则</h2></div>
+  <p class="sec-d">这些是无数失踪者留下的经验。它们不能保证你活着出去，但能保证你多活一会儿。</p>
+  <div class="laws">
+    <div class="law"><p><strong>不要长时间盯着荧光灯。</strong>嗡鸣声会在你听出规律时改变频率。那不是故障。</p></div>
+    <div class="law"><p><strong>保持安静。</strong>多数实体靠声音定位。奔跑的震动在空旷层级里能传出上千米。</p></div>
+    <div class="law"><p><strong>只喝杏仁水。</strong>任何标着"安全"但你不认识的液体，都不要碰 —— 液态痛苦看起来和杏仁水一模一样。</p></div>
+    <div class="law"><p><strong>不要相信"EXIT"标志。</strong>真正的出口从来不标出来。那些标志通常通向更深的层级。</p></div>
+    <div class="law"><p><strong>遇到无面人时不要与它对视超过三秒。</strong>它们会模仿你。模仿得越久，越想取代你。</p></div>
+    <div class="law"><p><strong>卡出（Noclip）是最后手段。</strong>成功率不到 3%，且你无法选择落点。但在 Level ! 里，它是唯一选择。</p></div>
+    <div class="law"><p><strong>记录你经过的层级编号。</strong>时间在后室不流动，很多人分不清自己走了三天还是三年。</p></div>
+  </div>
+</section>
+
+<div style="max-width:1180px;margin:0 auto"><div class="rule"></div></div>
+
+<!-- ============ 出口 ============ -->
+<section id="exit">
+  <div class="exit">
+    <h3>关于出口</h3>
+    <p>
+      没有记录在案的可靠出口。有人声称从 Level 3999 看到了现实世界的天空，
+      也有人卡进了 Level 9223372036854775807 之后再没出现。
+      唯一确定的是：一旦你开始寻找出口，你就已经不属于这里了。
+    </p>
+    <button class="btn" id="noclipBtn">NOCLIP · 强行卡出</button>
+    <p style="margin-top:20px;font-size:11.5px;color:var(--muted)">
+      警告：该操作不可逆。成功率约 2.7%。落点随机。
+    </p>
+  </div>
+</section>
+
+<footer>
+  <b>THE BACKROOMS</b> · 后室数据库 v1.0.3<br>
+  共记录层级 <b>21</b> / 实体 <b>8</b> / 物资 <b>6</b><br><br>
+  你已经在里面了。 ← 这句话不是玩笑。
+</footer>
+
+<button id="snd" title="环境音：荧光灯嗡鸣">♪</button>
+
+<script>
+/* ================= 数据 ================= */
+const LEVELS=[
+ {n:"Level 0",name:"教学关卡",alias:"THE LOBBY",c:1,cls:"b1",
+  d:"无限延伸的办公室走廊。旧地毯永远潮湿，壁纸是单一的黄色，荧光灯以固定频率嗡鸣。",
+  m:{生存难度:"1 · 安全",实体密度:"极低",出口:"卡出 / 罕见门",特征:"潮湿地毯气味"}},
+ {n:"Level 1",name:"宜居地带",alias:"HABITABLE ZONE",c:1,cls:"b1",
+  d:"巨大的混凝土仓库，堆放着木箱与工业货架。相对安全，是流浪者建立据点的主要层级。",
+  m:{生存难度:"1 · 安全",实体密度:"低",出口:"Level 2 / 电梯",特征:"混凝土与金属回声"}},
+ {n:"Level 2",name:"管道噩梦",alias:"PIPE DREAMS",c:2,cls:"b2",
+  d:"黑暗的维护通道，管壁高温，蒸汽从阀门喷出。能见度极低，你只能靠触感前进。",
+  m:{生存难度:"2 · 不安全",实体密度:"中",出口:"爬升管道",特征:"高温 / 蒸汽 / 狭窄"}},
+ {n:"Level 3",name:"电气车站",alias:"ELECTRIC STATION",c:2,cls:"b2",
+  d:"废弃的地下电气化车站。列车从不进站，但你能听见它们在远处运行。",
+  m:{生存难度:"2 · 不安全",实体密度:"中高",出口:"铁轨尽头",特征:"电气噪音 / 无列车"}},
+ {n:"Level 4",name:"废弃办公楼",alias:"ABANDONED OFFICE",c:1,cls:"b1",
+  d:"装修中的办公楼，堆满石膏板、电线与脚手架。窗外的风景是一片静止的灰白。",
+  m:{生存难度:"1 · 安全",实体密度:"低",出口:"窗户（不建议）",特征:"施工材料 / 假窗户"}},
+ {n:"Level 5",name:"恐怖旅馆",alias:"TERROR HOTEL",c:2,cls:"b2",
+  d:"装饰华丽的老式旅馆，走廊铺着红毯，墙上挂着看不清面孔的肖像。实体密度显著上升。",
+  m:{生存难度:"2 · 不安全",实体密度:"高",出口:"服务电梯",特征:"古典装饰 / 肖像"}},
+ {n:"Level 6",name:"熄灯",alias:"LIGHTS OUT",c:3,cls:"b3",
+  d:"绝对的黑暗。任何光源都会失效。你只能靠听觉和记忆移动，多数人在这里彻底崩溃。",
+  m:{生存难度:"3 · 危险",实体密度:"未知",出口:"未知",特征:"完全无光 / 精神威胁"}},
+ {n:"Level 7",name:"海洋恐惧症",alias:"THALASSOPHOBIA",c:4,cls:"b4",
+  d:"无尽的水下空间。脚下的地板在缓慢下沉，水一直漫向看不见的远方。深处有东西在动，而且不急。",
+  m:{生存难度:"4 · 极端",实体密度:"中",出口:"向上游（未证实）",特征:"深水 / 压迫感 / 缺氧"}},
+ {n:"Level 8",name:"洞穴系统",alias:"CAVE SYSTEM",c:3,cls:"b3",
+  d:"狭窄潮湿的天然洞穴，通道会自行改变走向。这里没有光源，也没有回声 —— 声音被什么东西吃掉了。",
+  m:{生存难度:"3 · 危险",实体密度:"高",出口:"极窄裂缝",特征:"通道变形 / 无回声"}},
+ {n:"Level 9",name:"郊区",alias:"THE SUBURBS",c:2,cls:"b2",
+  d:"夜色里无人的郊区街道。房子近在眼前，但每一扇门打开后都是另一条一模一样的街。",
+  m:{生存难度:"2 · 不安全",实体密度:"中",出口:"某栋房子的门",特征:"永夜 / 街道循环"}},
+ {n:"Level 10",name:"稻田",alias:"HAYFIELDS",c:1,cls:"b1",
+  d:"成熟的麦田一直铺到地平线。风是这里唯一的动静，也是唯一能替你掩盖脚步声的东西。",
+  m:{生存难度:"1 · 安全",实体密度:"极低",出口:"谷仓",特征:"开阔 / 视野极佳"}},
+ {n:"Level 11",name:"无尽城市",alias:"ENDLESS CITY",c:1,cls:"b1",
+  d:"一座永远走不到边的城市，街道、天桥与公寓楼无限复制。许多流浪者在此定居，然后忘了自己本来要出去。",
+  m:{生存难度:"1 · 安全",实体密度:"低",出口:"极难（易迷失）",特征:"城市景观 / 强定居性"}},
+ {n:"Level 12",name:"矩阵",alias:"THE MATRIX",c:1,cls:"b1",
+  d:"一片纯白空间，地面铺着规则排列的白色方块。这里不会出现实体 —— 但也带不走任何东西。",
+  m:{生存难度:"1 · 安全",实体密度:"无",出口:"需步行极远距离",特征:"纯白 / 绝对无实体"}},
+ {n:"Level 13",name:"公寓",alias:"THE APARTMENTS",c:3,cls:"b3",
+  d:"无人的公寓楼，家具摆得过分整齐。关着的门会自己打开；而打开过的门，关上后不再通向同一个房间。",
+  m:{生存难度:"3 · 危险",实体密度:"中高",出口:"电梯（不可靠）",特征:"空间错位 / 门后不定"}},
+ {n:"Level !",name:"惊逃",alias:"RUN FOR YOUR LIFE",c:4,cls:"b4",
+  d:"没有实体档案能描述它。所有记录者的共同建议只有一句：跑。不要停，不要回头，不要数你经过了几个转角。",
+  m:{生存难度:"4 · 极端",实体密度:"未知",出口:"仅能卡出",特征:"档案本身不稳定"}},
+ {n:"Level 37",name:"泳池房",alias:"POOLROOMS",c:1,cls:"b1",
+  d:"无尽的室内泳池，水面反射着不存在于任何光源下的光。安静得近乎温柔 —— 这反而危险。",
+  m:{生存难度:"1 · 安全",实体密度:"极低",出口:"水下通道",特征:"水声 / 过度宁静"}},
+ {n:"Level 188",name:"攀爬吧",alias:"THE CLIMB",c:3,cls:"b3",
+  d:"一段望不到尽头的楼梯与平台结构。你必须一直向上，但从来没有人确认过顶上有什么。",
+  m:{生存难度:"3 · 危险",实体密度:"中",出口:"顶部（未证实）",特征:"垂直结构 / 坠落风险"}},
+ {n:"Level 283",name:"车站",alias:"THE STATION",c:2,cls:"b2",
+  d:"一座废弃的铁路车站，月台停着一列永远不会发车的列车。广播会播报你的名字，用的是你母亲的语气。",
+  m:{生存难度:"2 · 不安全",实体密度:"低",出口:"车厢内部",特征:"广播 / 静止列车"}},
+ {n:"Level 3999",name:"后室的终结",alias:"THE END",c:0,cls:"b0",
+  d:"据称是后室的边界。一间普通的木屋，窗外是一片你认得的天空。没人证实过有人真的走了出去。",
+  m:{生存难度:"未定",实体密度:"无",出口:"？？？",特征:"档案严重缺失"}},
+ {n:"Level -1",name:"倒影",alias:"REFLECTIONS",c:0,cls:"b0",
+  d:"与 Level 0 完全相同的空间，唯一区别是一切都是镜像的 —— 包括你。现存记录不足三份。",
+  m:{生存难度:"未定",实体密度:"未知",出口:"未知",特征:"镜像 / 记录极少"}},
+ {n:"Level 9223372036854775807",name:"真实结局",alias:"THE TRUE ENDING",c:0,cls:"b0",
+  d:"编号抵达 64 位整数上限的层级。据信后室在这里结束，或者重新开始。没有任何完整记录被传回过。",
+  m:{生存难度:"未定",实体密度:"无记录",出口:"？？？",特征:"编号上限 / 零记录"}}
+];
+
+const ENTITIES=[
+ {id:"01",n:"无面人",en:"Faceling",t:4,c:"#7aa653",
+  d:"后室最常见的类人实体。面部是一片空白皮肤，没有五官。多数时候会模仿人类的日常动作。",
+  tags:["类人","模仿","通常温和"],
+  svg:'<path d="M12 3a7 7 0 0 1 7 7v4a7 7 0 0 1-14 0v-4a7 7 0 0 1 7-7z"/><path d="M12 17v4"/><path d="M6 21h12"/>'},
+ {id:"02",n:"猎犬",en:"Hound",t:8,c:"#e05a5a",
+  d:"四足实体，外形近似被拉长的犬类。听觉极其敏锐，一旦锁定目标会持续追击且不知疲倦。",
+  tags:["四足","高速","听觉捕猎"],
+  svg:'<path d="M3 14l3-6 4 3h5l3-2 3 5v3h-4l-2 3h-4l-2-3H6z"/><circle cx="7" cy="9" r=".8" fill="#e05a5a"/><path d="M20 12l2-2"/>'},
+ {id:"03",n:"死亡飞蛾",en:"Deathmoth",t:6,c:"#e8834a",
+  d:"巨大的鳞翅目实体。雄性具有攻击性，会围绕光源盘旋；雌性较少见，但极其危险。",
+  tags:["飞行","趋光","群居"],
+  svg:'<path d="M12 8v10"/><path d="M12 9C8 5 3 6 4 12c1 5 5 6 8 4"/><path d="M12 9c4-4 9-3 8 3-1 5-5 6-8 4"/><path d="M10 6l1-3M14 6l1-3"/>'},
+ {id:"04",n:"窃皮者",en:"Skin-Stealer",t:9,c:"#e05a5a",
+  d:"会剥下受害者的皮肤并披上。它能完美复制对方的声音与记忆，包括受害者自己都忘记的细节。",
+  tags:["变形","寄生","极高智能"],
+  svg:'<path d="M12 3a4 4 0 0 1 4 4v3a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4z"/><path d="M12 14v7"/><path d="M6 21h12"/><path d="M9 12l2 2 2-2" stroke-dasharray="1 1"/>'},
+ {id:"05",n:"派对客",en:"Partygoer",t:7,c:"#c07ad8",
+  d:"外表是一团彩色的、类似派对装饰的人形。它会用欢呼声引诱靠近者，然后将其转化成同类。",
+  tags:["引诱","转化","伪装友好"],
+  svg:'<circle cx="12" cy="9" r="5"/><path d="M9 9h1M14 9h1"/><path d="M9 12c1 2 5 2 6 0"/><path d="M12 14v7"/><path d="M6 21l2-4M18 21l-2-4"/>'},
+ {id:"06",n:"笑魇",en:"Smiler",t:8,c:"#e05a5a",
+  d:"黑暗中只能看见一张咧开的嘴与两排牙齿。它在完全无光的层级里最活跃，视力对它无效。",
+  tags:["暗处活动","牙列","惧光"],
+  svg:'<circle cx="12" cy="12" r="8" stroke-dasharray="2 3"/><path d="M7 12c0 4 3 6 5 6s5-2 5-6z"/><path d="M9 13v3M12 13v3.5M15 13v3"/>'},
+ {id:"10",n:"悲尸",en:"Sanguine Festivus",t:5,c:"#e8834a",
+  d:"全身覆盖着不断渗出红色液体的类人实体。它不会主动攻击，但接触其体液会造成严重感染。",
+  tags:["污染源","被动","接触危险"],
+  svg:'<path d="M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4z"/><path d="M12 15v5"/><path d="M6 20h12"/><path d="M12 12v6M9 15v3M15 15v3" stroke-dasharray="1 2"/>'},
+ {id:"67",n:"幼年无面人",en:"Child Faceling",t:3,c:"#7aa653",
+  d:"无面人的幼体，体型约为人类儿童大小。好奇心强，会尾随流浪者数小时而不发起攻击。",
+  tags:["幼体","尾随","好奇心"],
+  svg:'<ellipse cx="12" cy="8" rx="5" ry="5"/><path d="M12 13v6"/><path d="M7 19h10"/><path d="M8 21l2-2M16 21l-2-2"/>'}
+];
+
+const SUPPLIES=[
+ {k:"ITEM 01",n:"杏仁水",r:"常见",c:"r-c",
+  d:"后室最基础的补给。透明微甜，能缓解脱水与精神消耗。变质的杏仁水是剧毒 —— 尝起来更甜。"},
+ {k:"ITEM 02",n:"能量棒",r:"常见",c:"r-c",
+  d:"高热量的压缩食品，包装上没有品牌。吃多了会让人产生自己仍在外面的错觉。"},
+ {k:"ITEM 03",n:"幸运燕麦",r:"罕见",c:"r-r",
+  d:"一小袋即食燕麦。据说食用后会在接下来的 24 小时内避开一次致命遭遇。"},
+ {k:"ITEM 04",n:"液态痛苦",r:"危险",c:"r-s",
+  d:"外观与杏仁水几乎无法区分。饮用者会在数分钟内经历极其真实的全身剧痛，通常致命。"},
+ {k:"ITEM 05",n:"皇家口粮",r:"稀有",c:"r-r",
+  d:"据称来自 Level 5 旅馆的宴会厅。能完全恢复体力，但有报告称食用者开始听到别人的声音。"},
+ {k:"ITEM 06",n:"记忆罐",r:"稀有",c:"r-r",
+  d:"封存着某位流浪者的一段记忆。打开后你会真切地经历它 —— 包括那个人最后看到的东西。"}
+];
+
+/* ================= 渲染 ================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>s;
+
+let lvF='all', lvQ='';
+function renderLevels(){
+  const g=$('#lvGrid'); g.innerHTML='';
+  const q=lvQ.trim().toLowerCase();
+  const list=LEVELS.filter(l=>{
+    if(lvF!=='all' && String(l.c)!==lvF) return false;
+    if(!q) return true;
+    return (l.n+' '+l.name+' '+l.alias+' '+l.d).toLowerCase().includes(q);
+  });
+  $('#lvCount').textContent='档案 '+list.length+' / '+LEVELS.length;
+  if(!list.length){
+    g.innerHTML='<p class="hint" style="grid-column:1/-1">未检索到匹配层级。信号丢失 —— 或者它不想被找到。</p>';
+    return;
+  }
+  list.forEach((l,i)=>{
+    const d=document.createElement('div');
+    d.className='lv'; d.dataset.id=l.n; d.style.animationDelay=(i*55)+'ms';
+    d.innerHTML=`
+      <div class="lv-top">
+        <div>
+          <div class="lv-num">${l.n}</div>
+          <div class="lv-name">${l.name}</div>
+          <div class="lv-alias">${l.alias}</div>
+        </div>
+        <span class="badge ${l.cls}">${l.c===0?'CLASS ?':'CLASS '+l.c}</span>
+      </div>
+      <p class="lv-desc">${l.d}</p>
+      <div class="lv-more"><dl>${Object.entries(l.m).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl></div>`;
+    d.addEventListener('click',()=>d.classList.toggle('open'));
+    g.appendChild(d);
+  });
+}
+
+function renderEntities(){
+  const g=$('#entGrid');
+  ENTITIES.forEach((e,i)=>{
+    const d=document.createElement('div');
+    d.className='ent'; d.style.animationDelay=(i*60)+'ms';
+    d.innerHTML=`
+      <div class="ico"><svg viewBox="0 0 24 24">${e.svg}</svg></div>
+      <div>
+        <h3>Entity ${e.id} · ${e.n}</h3>
+        <div class="en">${e.en}</div>
+        <p>${e.d}</p>
+        <div class="threat">
+          <span class="tnum">威胁 ${e.t}/10</span>
+          <span class="tbar"><span data-w="${e.t*10}" style="background:${e.c}"></span></span>
+        </div>
+        <div class="tags">${e.tags.map(t=>`<span class="tg">${t}</span>`).join('')}</div>
+      </div>`;
+    g.appendChild(d);
+  });
+}
+
+function renderSupplies(){
+  const g=$('#supGrid');
+  SUPPLIES.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='item'; d.style.animationDelay=(i*50)+'ms';
+    d.innerHTML=`<span class="rare ${s.c}">${s.r}</span>
+      <div class="k">${s.k}</div><h4>${s.n}</h4><p>${s.d}</p>`;
+    g.appendChild(d);
+  });
+}
+
+renderLevels(); renderEntities(); renderSupplies();
+
+/* 筛选 + 检索 */
+$$('#lvFilters .fbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    $$('#lvFilters .fbtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); lvF=b.dataset.f; renderLevels();
+  });
+});
+let sq;
+$('#lvSearch').addEventListener('input',e=>{
+  clearTimeout(sq);
+  sq=setTimeout(()=>{lvQ=e.target.value; renderLevels();},120);
+});
+
+/* 威胁条进入视口时生长 */
+const tio=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting)return;
+    e.target.querySelectorAll('.tbar span').forEach((s,i)=>{
+      setTimeout(()=>{s.style.width=s.dataset.w+'%'},i*80);
+    });
+    tio.unobserve(e.target);
+  });
+},{threshold:.25});
+$$('.ent').forEach(e=>tio.observe(e));
+
+/* ================= 进度条 + 导航高亮 + 时钟 ================= */
+const bar=$('#prog');
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+},{passive:true});
+
+const secs=$$('section[id]');
+const nio=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting)return;
+    $$('.bar nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));
+  });
+},{rootMargin:'-45% 0px -50% 0px'});
+secs.forEach(s=>nio.observe(s));
+
+function tick(){
+  const d=new Date();
+  $('#clock').textContent=[d.getHours(),d.getMinutes(),d.getSeconds()]
+    .map(x=>String(x).padStart(2,'0')).join(':');
+}
+tick(); setInterval(tick,1000);
+
+/* ================= NOCLIP ================= */
+const OUTS=[
+  '卡出失败。你还在原地。',
+  '卡出失败。这次你摔在了地毯上。',
+  '卡出失败。周围的黄墙纹丝不动。',
+  '卡出成功 —— 但你落在了更深的地方。',
+  '卡出失败。有什么东西听见了声音。',
+  '卡出失败。荧光灯闪了一下。'
+];
+$('#noclipBtn').addEventListener('click',()=>{
+  const f=$('#flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
+  setTimeout(()=>{
+    const cards=$$('.lv');
+    const t=cards[Math.floor(Math.random()*cards.length)];
+    t.scrollIntoView({behavior:'smooth',block:'center'});
+    t.classList.add('open');
+    cards.forEach(c=>{if(c!==t)c.classList.remove('open')});
+    t.style.transition='none'; t.style.boxShadow='0 0 0 2px var(--amber)';
+    setTimeout(()=>{t.style.transition='';t.style.boxShadow=''},1400);
+    toast(OUTS[Math.floor(Math.random()*OUTS.length)]);
+  },260);
+});
+let tt;
+function toast(m){
+  const t=$('#toast'); t.textContent=m; t.classList.add('show');
+  clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ================= 环境音 (Web Audio) ================= */
+let ac=null,muted=true;
+$('#snd').addEventListener('click',function(){
+  if(!ac){
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC){toast('浏览器不支持环境音');return}
+    ac=new AC();
+    // 60Hz 荧光灯嗡鸣
+    const o=ac.createOscillator(), lp=ac.createBiquadFilter(), g=ac.createGain();
+    o.type='sawtooth'; o.frequency.value=60;
+    lp.type='lowpass'; lp.frequency.value=180;
+    g.gain.value=.022;
+    o.connect(lp); lp.connect(g); g.connect(ac.destination); o.start();
+    // 白噪（空气 / 磁带底噪）
+    const len=ac.sampleRate*2, buf=ac.createBuffer(1,len,ac.sampleRate), ch=buf.getChannelData(0);
+    for(let i=0;i<len;i++)ch[i]=(Math.random()*2-1)*.5;
+    const src=ac.createBufferSource(); src.buffer=buf; src.loop=true;
+    const hp=ac.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=1200;
+    const ng=ac.createGain(); ng.gain.value=.012;
+    src.connect(hp); hp.connect(ng); ng.connect(ac.destination); src.start();
+  }
+  muted=!muted;
+  muted?ac.suspend():ac.resume();
+  this.classList.toggle('on',!muted);
+  this.textContent=muted?'♪':'♫';
+  toast(muted?'环境音已关闭':'环境音已开启 · 荧光灯嗡鸣 60Hz');
+});
+
+/* ================= 走廊 CANVAS ================= */
+(function(){
+  const cv=document.getElementById('corridor');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  let W=0,H=0,dpr=1,cx=0,cy=0,running=true,t=0;
+  const K=1.62, LAYERS=15;
+  let hwFar=1, hhFar=1;
+
+  const C={
+    wall:'#d8c893', wallDark:'#8f8351', wallDeep:'#4a4326',
+    ceil:'#c9bd88', ceilDark:'#6d6440',
+    floor:'#8a7c4e', floorDark:'#584e2c',
+    line:'rgba(60,52,24,.55)', lamp:'#fff3c4'
+  };
+
+  function resize(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cv.clientWidth; H=cv.clientHeight;
+    cv.width=W*dpr; cv.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    cx=W/2; cy=H*0.47;
+    hwFar=Math.max(W,H)*0.045; hhFar=Math.max(W,H)*0.032;
+  }
+  window.addEventListener('resize',resize);
+  resize();
+
+  function sizeAt(j,frac){
+    const s=Math.pow(K,j+1-frac);
+    return {hw:hwFar*s, hh:hhFar*s, z:s};
+  }
+
+  function poly(pts,fill,stroke,lw){
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);
+    ctx.closePath();
+    if(fill){ctx.fillStyle=fill;ctx.fill()}
+    if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.stroke()}
+  }
+
+  function draw(){
+    if(!running)return;
+    const frac=(t*0.34)%1;
+    const F=sizeAt(0,frac);
+
+    // 背景（远端黑暗）
+    ctx.fillStyle='#0d0c07';
+    ctx.fillRect(0,0,W,H);
+
+    // 远端矩形
+    const x0=cx-F.hw, x1=cx+F.hw, y0=cy-F.hh, y1=cy+F.hh;
+
+    // 天花板
+    poly([[0,0],[W,0],[x1,y0],[x0,y0]],C.ceil,null);
+    // 地板
+    poly([[0,H],[W,H],[x1,y1],[x0,y1]],C.floor,null);
+    // 左墙
+    poly([[0,0],[x0,y0],[x0,y1],[0,H]],C.wall,null);
+    // 右墙
+    poly([[W,0],[x1,y0],[x1,y1],[W,H]],C.wall,null);
+
+    // ---- 墙面透视竖条纹（壁纸）----
+    ctx.strokeStyle=C.line; ctx.lineWidth=1;
+    for(let j=0;j<24;j++){
+      const s=Math.pow(K,(j+1-frac)*0.5);
+      const px=cx-F.hw*s;
+      if(px<-20)break;
+      ctx.globalAlpha=Math.min(1,s*0.14);
+      ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,H);ctx.stroke();
+      const px2=cx+F.hw*s;
+      ctx.beginPath();ctx.moveTo(px2,0);ctx.lineTo(px2,H);ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+
+    // ---- 房间分隔框（门框）----
+    for(let j=0;j<LAYERS;j++){
+      const S=sizeAt(j,frac);
+      if(S.hw>W*1.6)continue;
+      const a=Math.min(1,S.hw/(W*0.5));
+      ctx.globalAlpha=a*0.85;
+      ctx.strokeStyle='rgba(46,40,18,.8)';
+      ctx.lineWidth=Math.max(1,S.hw*0.012);
+      ctx.strokeRect(cx-S.hw,cy-S.hh,S.hw*2,S.hh*2);
+      // 踢脚线阴影
+      ctx.globalAlpha=a*0.25;
+      ctx.fillStyle='#2a2512';
+      ctx.fillRect(cx-S.hw,cy+S.hh-S.hh*0.14,S.hw*2,S.hh*0.14);
+    }
+    ctx.globalAlpha=1;
+
+    // ---- 天花板灯（由远及近）----
+    for(let j=LAYERS-1;j>=0;j--){
+      const S=sizeAt(j,frac);
+      if(S.hw>W*1.6)continue;
+      const ly=cy-S.hh+S.hh*0.06;
+      const lw=S.hw*0.42, lh=Math.max(1.5,S.hh*0.07);
+      const a=Math.min(1,S.hw/(W*0.34));
+      // 灯罩暗框
+      ctx.globalAlpha=a*0.7;
+      ctx.fillStyle='#5c542c';
+      ctx.fillRect(cx-lw*1.05,ly-lh*0.5,lw*2.1,lh*1.6);
+      // 灯管
+      const fl=0.72+0.28*Math.abs(Math.sin(t*7.3+j*2.1));
+      ctx.globalAlpha=a*fl;
+      ctx.fillStyle=C.lamp;
+      ctx.fillRect(cx-lw,ly,lw*2,lh);
+      // 光晕
+      const gr=ctx.createRadialGradient(cx,ly+lh/2,0,cx,ly+lh/2,lw*3.2);
+      gr.addColorStop(0,'rgba(255,240,190,'+(0.3*a*fl)+')');
+      gr.addColorStop(1,'rgba(255,240,190,0)');
+      ctx.globalAlpha=1;
+      ctx.fillStyle=gr;
+      ctx.fillRect(cx-lw*3.2,ly-lw*3.2,lw*6.4,lw*6.4);
+    }
+    ctx.globalAlpha=1;
+
+    // ---- 地板横向缝（地毯格）----
+    ctx.strokeStyle='rgba(40,34,14,.5)';
+    for(let j=0;j<LAYERS;j++){
+      const S=sizeAt(j,frac);
+      if(S.hw>W*1.6)continue;
+      const fy=cy+S.hh;
+      ctx.globalAlpha=Math.min(1,S.hw/(W*0.5))*0.8;
+      ctx.lineWidth=Math.max(1,S.hw*0.008);
+      ctx.beginPath();ctx.moveTo(cx-S.hw,fy);ctx.lineTo(cx+S.hw,fy);ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+
+    // ---- 远端黑暗 + 暗角 ----
+    const g2=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(W,H)*0.62);
+    g2.addColorStop(0,'rgba(0,0,0,0)');
+    g2.addColorStop(0.35,'rgba(0,0,0,.18)');
+    g2.addColorStop(1,'rgba(0,0,0,.88)');
+    ctx.fillStyle=g2; ctx.fillRect(0,0,W,H);
+
+    // 远端矩形填黑（走廊尽头）
+    ctx.fillStyle='#000';
+    ctx.fillRect(x0,y0,x1-x0,y1-y0);
+
+    t+=1/60;
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // 离开视口时暂停，回到视口时重启（保证只有一个动画循环）
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(es=>{
+      if(es[0].isIntersecting){
+        if(!running){running=true;requestAnimationFrame(draw);}
+      }else{
+        running=false;
+      }
+    },{threshold:0}).observe(cv);
+  }
+})();
+</script>
+</body>
+</html>
